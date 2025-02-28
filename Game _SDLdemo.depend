@@ -1,0 +1,44 @@
+# depslib dependency file v1.0
+1740378200 source:c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.cpp
+	<bits/stdc++.h>
+	"CommonFunc.h"
+
+1740662788 c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1740663202 source:c:\users\legion\documents\codeblock\game _sdldemo\main.cpp
+	"BaseObject.h"
+	"game_map.h"
+	"MainObject.h"
+
+1740484662 source:c:\users\legion\documents\codeblock\game _sdldemo\baseobject.cpp
+	<bits/stdc++.h>
+	"BaseObject.h"
+
+1740484662 c:\users\legion\documents\codeblock\game _sdldemo\baseobject.h
+	"CommonFunc.h"
+
+1740756212 source:c:\users\legion\documents\codeblock\game _sdldemo\game_map.cpp
+	"game_map.h"
+	<bits/stdc++.h>
+
+1740621635 c:\users\legion\documents\codeblock\game _sdldemo\game_map.h
+	"CommonFunc.h"
+	"BaseObject.h"
+
+1740755599 source:c:\users\legion\documents\codeblock\game _sdldemo\mainobject.cpp
+	"MainObject.h"
+	<bits/stdc++.h>
+
+1740755599 c:\users\legion\documents\codeblock\game _sdldemo\mainobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+
+1740662898 source:c:\users\legion\documents\codeblock\game _sdldemo\imtimer.cpp
+
+1740662718 c:\users\legion\documents\codeblock\game _sdldemo\imtimer.h
+
