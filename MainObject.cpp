@@ -22,6 +22,8 @@ MainObject::MainObject()
     on_ground=0;
 
     map_x_=0;
+
+    count_coins=0;
 }
 
 MainObject::~MainObject(){}
@@ -174,14 +176,17 @@ void MainObject::CheckToMap(Map &map_data)
 
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
         if(x_val_>0){// right
-            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
+            if(earn_coin(map_data.tile[y1][x2],map_data.tile[y2][x2])){;}
+            else if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 x_pos_ = x2 * TILE_SIZE;
-                x_pos_ -= width_frame_ + 1;
-                x_val_ = 0; // cannot moving
+                x_pos_-=width_frame_+1;
+                x_val_ = 0;
             }
         }
         if(x_val_<0){
-             if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE){
+
+            if(earn_coin(map_data.tile[y1][x1],map_data.tile[y2][x1])){;}
+            else if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE){
                 x_pos_ = (x1 + 1) * TILE_SIZE;
                 x_val_ = 0;
             }
@@ -198,16 +203,17 @@ void MainObject::CheckToMap(Map &map_data)
     if(on_ground==0||on_ground==1) frame_=0;
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
         if(y_val_>0){// down
-            if(map_data.tile[y2][x1]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
+            if(earn_coin(map_data.tile[y2][x1],map_data.tile[y2][x2])){;}
+            else if(map_data.tile[y2][x1]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 y_pos_ = y2 * TILE_SIZE;
                 y_pos_ -= height_frame_;
                 y_val_ = 0;
-
                 on_ground=2;
             }
         }
         if(y_val_<0){
-             if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y1][x2]!=BLANK_TILE){
+            if(earn_coin(map_data.tile[y1][x1],map_data.tile[y1][x2])){;}
+            else if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y1][x2]!=BLANK_TILE){
                 y_pos_ = (y1 + 1) * TILE_SIZE;
                 y_val_ = 0;
             }
@@ -224,7 +230,22 @@ void MainObject::CheckToMap(Map &map_data)
     if(y_pos_>SCREEN_WIDTH) y_pos_=0;
 }
 
-
+bool MainObject::earn_coin(int &val1,int &val2)
+{
+    if(val1==COIN_TILE)
+    {
+        val1=BLANK_TILE;
+        count_coins++;
+        return true;
+    }
+    if(val2==COIN_TILE)
+    {
+        val1=BLANK_TILE;
+        count_coins++;
+        return true;
+    }
+    return false;
+}//xu li xong nhat dong xu
 
 
 

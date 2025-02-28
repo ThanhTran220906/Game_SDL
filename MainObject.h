@@ -4,9 +4,9 @@
 #include "CommonFunc.h"
 #include "BaseObject.h"
 
-#define GRAVITY 1.1
-#define MAX_FALL_SPEED 10
-#define PLAYER_SPEED 50
+#define GRAVITY 1.2
+#define MAX_FALL_SPEED 15
+#define PLAYER_SPEED 40//10
 #define JUMP_VAL 15
 
 #define COME_BACK_TIME 1000
@@ -31,12 +31,11 @@ public:
     void DoPlayer(Map &map_data);
     void CheckToMap(Map &map_data);
 
-    void SetMapX(int x)
-{
-    map_x_=x;
-
-}
+    void SetMapX(int x){ map_x_=x;}
     void CenterUntinyOnMap(Map &map_data);
+
+    bool earn_coin(int &val1,int &val2);
+
 private:
     float x_val_;
     float y_val_;
@@ -55,5 +54,7 @@ private:
     int on_ground;
 
     int map_x_;
+
+    int count_coins;
 
 };

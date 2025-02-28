@@ -14,8 +14,6 @@ static SDL_Window *g_window =NULL;
 static SDL_Renderer *g_screen =NULL;
 static SDL_Event g_event;
 
-//screen
-const int fps_gamme=25;
 
 const int SCREEN_WIDTH=1200;
 const int SCREEN_HEIGHT=640;
@@ -32,6 +30,7 @@ const int COLOR_KEY_B=180;
 #define MAX_MAP_X 400
 #define MAX_MAP_Y 10
 #define BLANK_TILE 0
+#define COIN_TILE 4
 
 struct Map
 {

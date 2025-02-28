@@ -3,17 +3,18 @@
 	<bits/stdc++.h>
 	"CommonFunc.h"
 
-1740662788 c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.h
+1740770443 c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1740663202 source:c:\users\legion\documents\codeblock\game _sdldemo\main.cpp
+1740769329 source:c:\users\legion\documents\codeblock\game _sdldemo\main.cpp
 	"BaseObject.h"
 	"game_map.h"
 	"MainObject.h"
+	"ImpTimer.h"
 
 1740484662 source:c:\users\legion\documents\codeblock\game _sdldemo\baseobject.cpp
 	<bits/stdc++.h>
@@ -30,15 +31,21 @@
 	"CommonFunc.h"
 	"BaseObject.h"
 
-1740755599 source:c:\users\legion\documents\codeblock\game _sdldemo\mainobject.cpp
+1740771347 source:c:\users\legion\documents\codeblock\game _sdldemo\mainobject.cpp
 	"MainObject.h"
 	<bits/stdc++.h>
 
-1740755599 c:\users\legion\documents\codeblock\game _sdldemo\mainobject.h
+1740771369 c:\users\legion\documents\codeblock\game _sdldemo\mainobject.h
 	"CommonFunc.h"
 	"BaseObject.h"
 
 1740662898 source:c:\users\legion\documents\codeblock\game _sdldemo\imtimer.cpp
 
 1740662718 c:\users\legion\documents\codeblock\game _sdldemo\imtimer.h
+
+1740769426 c:\users\legion\documents\codeblock\game _sdldemo\imptimer.h
+
+1740769353 source:c:\users\legion\documents\codeblock\game _sdldemo\imptimer.cpp
+	"ImpTimer.h"
+	"CommonFunc.h"
 
