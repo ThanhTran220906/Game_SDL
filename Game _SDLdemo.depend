@@ -3,14 +3,14 @@
 	<bits/stdc++.h>
 	"CommonFunc.h"
 
-1740770443 c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.h
+1740830472 c:\users\legion\documents\codeblock\game _sdldemo\commonfunc.h
 	<bits/stdc++.h>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
 	<SDL_ttf.h>
 
-1740769329 source:c:\users\legion\documents\codeblock\game _sdldemo\main.cpp
+1741609192 source:c:\users\legion\documents\codeblock\game _sdldemo\main.cpp
 	"BaseObject.h"
 	"game_map.h"
 	"MainObject.h"
@@ -20,32 +20,51 @@
 	<bits/stdc++.h>
 	"BaseObject.h"
 
-1740484662 c:\users\legion\documents\codeblock\game _sdldemo\baseobject.h
+1741831229 c:\users\legion\documents\codeblock\game _sdldemo\baseobject.h
 	"CommonFunc.h"
 
-1740756212 source:c:\users\legion\documents\codeblock\game _sdldemo\game_map.cpp
+1741831229 source:c:\users\legion\documents\codeblock\game _sdldemo\game_map.cpp
 	"game_map.h"
 	<bits/stdc++.h>
 
-1740621635 c:\users\legion\documents\codeblock\game _sdldemo\game_map.h
+1741831229 c:\users\legion\documents\codeblock\game _sdldemo\game_map.h
 	"CommonFunc.h"
 	"BaseObject.h"
+	"ThreatObject.h"
 
-1740771347 source:c:\users\legion\documents\codeblock\game _sdldemo\mainobject.cpp
+1741832152 source:c:\users\legion\documents\codeblock\game _sdldemo\mainobject.cpp
 	"MainObject.h"
 	<bits/stdc++.h>
 
-1740771369 c:\users\legion\documents\codeblock\game _sdldemo\mainobject.h
+1741608061 c:\users\legion\documents\codeblock\game _sdldemo\mainobject.h
 	"CommonFunc.h"
 	"BaseObject.h"
+	"BulletObject.h"
 
 1740662898 source:c:\users\legion\documents\codeblock\game _sdldemo\imtimer.cpp
 
 1740662718 c:\users\legion\documents\codeblock\game _sdldemo\imtimer.h
 
-1740769426 c:\users\legion\documents\codeblock\game _sdldemo\imptimer.h
+1740811727 c:\users\legion\documents\codeblock\game _sdldemo\imptimer.h
 
 1740769353 source:c:\users\legion\documents\codeblock\game _sdldemo\imptimer.cpp
 	"ImpTimer.h"
 	"CommonFunc.h"
+
+1741832152 c:\users\legion\documents\codeblock\game _sdldemo\bulletobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+
+1741831229 source:c:\users\legion\documents\codeblock\game _sdldemo\bulletobject.cpp
+	"BulletObject.h"
+
+1741609192 source:c:\users\legion\documents\codeblock\game _sdldemo\threatobject.cpp
+	"ThreatObject.h"
+	<bits/stdc++.h>
+
+1741609192 c:\users\legion\documents\codeblock\game _sdldemo\threatobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+	"BulletObject.h"
+	"MainObject.h"
 

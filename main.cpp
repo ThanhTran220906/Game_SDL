@@ -62,7 +62,17 @@ int main(int argc, char* argv[])
     GameMap game_map;
     game_map.LoadMap("map//map01.dat");
     game_map.LoadTiles(g_screen);
+//
+    vector <ThreatObject*> threatlist;
+    threatlist=game_map.GetThreatList();
+    for(int i=0;i<threatlist.size();i++){
+        threatlist[i]->LoadImg("img//threat_right.png",g_screen);
+        threatlist[i]->set_clips();
+    }
 
+
+  //
+    vector <BulletObject*> bulletlist;
     MainObject p_player;
     p_player.LoadImg("img//player_right.png",g_screen);
     p_player.set_clips();
@@ -86,7 +96,7 @@ int main(int argc, char* argv[])
 
 
         Map map_data=game_map.GetMap();
-        p_player.SetMapX(map_data.start_x_);
+        p_player.SetMapXY(map_data.start_x_,map_data.start_y_);
 
 
         p_player.DoPlayer(map_data);
@@ -94,6 +104,30 @@ int main(int argc, char* argv[])
         game_map.SetMap(map_data);
 
         game_map.DrawMap(g_screen);
+        //
+        bulletlist=p_player.Get_Bulletlist();
+        //xu li dan
+        for(int i=0;i<bulletlist.size();i++){
+            bulletlist[i]->CheckToMap(map_data);
+            if(bulletlist[i]->Get_is_move()==false) bulletlist.erase(bulletlist.begin()+i);
+            bulletlist[i]->HandleBulletMove(map_data.start_x_,map_data.start_y_);
+            bulletlist[i]->Render(g_screen,NULL);
+
+        }
+        p_player.Set_Bulletlist(bulletlist);
+        //
+        for(int i=0;i<threatlist.size();i++){
+        threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
+        threatlist[i]->MovetoPlayer(p_player, map_data);
+        threatlist[i]->AutoMoveThreat(map_data);
+        threatlist[i]->SetBulletList(bulletlist);
+        threatlist[i]->Bullet_to_threat();
+        threatlist[i]->Show(g_screen);
+        if(threatlist[i]->Get_health()==0) threatlist.erase(threatlist.begin()+i);
+    }
+        p_player.Set_Bulletlist(bulletlist);
+        game_map.SetThreatList(threatlist);
+
 
         SDL_RenderPresent(g_screen);
         int real_time_loop=fps.get_ticks();

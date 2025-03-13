@@ -1,7 +1,7 @@
 
 #pragma
 
-#define FRAME_PER_SECOND 40
+#define FRAME_PER_SECOND 25
 int const one_frame_time=1000/FRAME_PER_SECOND;
 
 class ImpTimer

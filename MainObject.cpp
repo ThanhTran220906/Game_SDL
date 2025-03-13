@@ -8,11 +8,9 @@ MainObject::MainObject()
     frame_=0;
     x_pos_=SCREEN_WIDTH/2;
     y_pos_=0;
-    x_val_=0;
-    y_val_=0;
     width_frame_=0;
     height_frame_ =0;
-    status_=-1;
+    status_=0;
     input_type_.left_=0;
     input_type_.right_=0;
     input_type_.jump_=0;
@@ -22,11 +20,14 @@ MainObject::MainObject()
     on_ground=0;
 
     map_x_=0;
-
+    map_y_=0;
     count_coins=0;
 }
 
-MainObject::~MainObject(){}
+MainObject::~MainObject()
+{
+    Free();
+}
 
 bool MainObject::LoadImg(string path,SDL_Renderer *screen)
 {
@@ -71,13 +72,17 @@ void MainObject::Show(SDL_Renderer *des)
     else frame_=0;
 
     rect_.x=x_pos_-map_x_;
-    rect_.y=y_pos_;
+
+    rect_.y=y_pos_-map_y_;
+
 
     SDL_Rect* current_clips=&frame_clip_[frame_];
 
     SDL_Rect renderQuad={rect_.x,rect_.y, width_frame_,height_frame_};
 
     SDL_RenderCopy(des,p_object_,current_clips,&renderQuad);
+
+
 
 }
 
@@ -120,8 +125,25 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
         }
     }
     if(events.type==SDL_KEYDOWN){
-        if(events.key.keysym.sym==SDLK_SPACE){
+        if(events.key.keysym.sym==SDLK_UP){
             input_type_.jump_=1;
+        }
+    }
+    else if(events.type==SDL_KEYUP){
+        if(events.key.keysym.sym==SDLK_UP){
+            input_type_.jump_=0;
+        }
+    }
+
+
+    if(events.type==SDL_KEYDOWN){//tao dan
+        if(events.key.keysym.sym==SDLK_SPACE){
+            BulletObject *bullet_tmp= new BulletObject();
+            bullet_tmp->CreateBullet(x_pos_+20,y_pos_+15,map_x_,map_y_);
+            bullet_tmp->LoadImg("img//bullet.png",screen);
+            if(status_==WALK_RIGHT) {bullet_tmp->SetVal(30,0);}
+            if(status_==WALK_LEFT) {bullet_tmp->SetVal(-30,0);}
+            bulletlist.push_back(bullet_tmp);
         }
     }
 
@@ -149,13 +171,14 @@ void MainObject::DoPlayer(Map &map_data)
 
     CheckToMap(map_data);
     CenterUntinyOnMap(map_data);
+
 }
 
 void MainObject::CenterUntinyOnMap(Map &map_data)
 {
     map_data.start_x_=x_pos_-(SCREEN_WIDTH/2);
     if(map_data.start_x_<0) map_data.start_x_=0;
-    else if(map_data.start_x_+SCREEN_WIDTH>map_data.max_x_) map_data.start_x_=map_data.max_x_-SCREEN_WIDTH-1;
+    if(map_data.start_x_+SCREEN_WIDTH>map_data.max_x_-64) map_data.start_x_=map_data.max_x_-SCREEN_WIDTH-64;
 }
 
 void MainObject::CheckToMap(Map &map_data)
@@ -165,6 +188,21 @@ void MainObject::CheckToMap(Map &map_data)
 
     int y1=0;
     int y2=0;
+    //earn coin
+    x1 = (x_pos_ -10) / TILE_SIZE;
+    x2 = (x_pos_ +width_frame_+10) / TILE_SIZE;
+
+    y1=(y_pos_-10)/TILE_SIZE;
+    y2=(y_pos_+height_frame_+10)/TILE_SIZE;
+    int y3=(y1+y2)/2;
+    earn_coin(map_data.tile[y1][x1]);
+    earn_coin(map_data.tile[y1][x2]);
+    earn_coin(map_data.tile[y2][x1]);
+    earn_coin(map_data.tile[y2][x2]);
+    earn_coin(map_data.tile[y3][x1]);
+    earn_coin(map_data.tile[y3][x2]);
+
+    //thêm cơ chế đổi đạn vào đây
 
     //check horizontal
     int height_min =min(height_frame_,TILE_SIZE);
@@ -175,18 +213,16 @@ void MainObject::CheckToMap(Map &map_data)
     y2=(y_pos_+height_min-1)/TILE_SIZE;
 
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+
         if(x_val_>0){// right
-            if(earn_coin(map_data.tile[y1][x2],map_data.tile[y2][x2])){;}
-            else if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
+            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 x_pos_ = x2 * TILE_SIZE;
                 x_pos_-=width_frame_+1;
                 x_val_ = 0;
             }
         }
         if(x_val_<0){
-
-            if(earn_coin(map_data.tile[y1][x1],map_data.tile[y2][x1])){;}
-            else if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE){
+            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE){
                 x_pos_ = (x1 + 1) * TILE_SIZE;
                 x_val_ = 0;
             }
@@ -202,9 +238,9 @@ void MainObject::CheckToMap(Map &map_data)
 
     if(on_ground==0||on_ground==1) frame_=0;
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+
         if(y_val_>0){// down
-            if(earn_coin(map_data.tile[y2][x1],map_data.tile[y2][x2])){;}
-            else if(map_data.tile[y2][x1]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
+            if(map_data.tile[y2][x1]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 y_pos_ = y2 * TILE_SIZE;
                 y_pos_ -= height_frame_;
                 y_val_ = 0;
@@ -212,8 +248,7 @@ void MainObject::CheckToMap(Map &map_data)
             }
         }
         if(y_val_<0){
-            if(earn_coin(map_data.tile[y1][x1],map_data.tile[y1][x2])){;}
-            else if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y1][x2]!=BLANK_TILE){
+            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y1][x2]!=BLANK_TILE){
                 y_pos_ = (y1 + 1) * TILE_SIZE;
                 y_val_ = 0;
             }
@@ -230,22 +265,13 @@ void MainObject::CheckToMap(Map &map_data)
     if(y_pos_>SCREEN_WIDTH) y_pos_=0;
 }
 
-bool MainObject::earn_coin(int &val1,int &val2)
+void MainObject::earn_coin(int &val)
 {
-    if(val1==COIN_TILE)
-    {
-        val1=BLANK_TILE;
+    if(val==COIN_TILE){
         count_coins++;
-        return true;
+        val=0;
     }
-    if(val2==COIN_TILE)
-    {
-        val1=BLANK_TILE;
-        count_coins++;
-        return true;
-    }
-    return false;
-}//xu li xong nhat dong xu
+}
 
 
 

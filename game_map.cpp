@@ -14,6 +14,14 @@ void GameMap::LoadMap(char* name)
     for(int i=0;i<MAX_MAP_Y;i++){
         for(int j=0;j<MAX_MAP_X;j++){
             fs>>game_map_.tile[i][j];
+            //Spawn Threat
+            if(game_map_.tile[i][j]==6){
+                ThreatObject *thread_tmp =new ThreatObject;
+                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE+12);
+                game_map_.tile[i][j]=0;
+                threatlist.push_back(thread_tmp);
+            }
+            //
             int val =game_map_.tile[i][j];
             if(val>0) {
                 if(j>game_map_.max_x_){
@@ -67,12 +75,6 @@ void GameMap::DrawMap(SDL_Renderer *screen)
 
     x1=(game_map_.start_x_%TILE_SIZE)*-1;//nho hon TILE_SIZE
     x2 = x1 + SCREEN_WIDTH + (x1 == 0 ? 0 : TILE_SIZE);
-/*  x1,y1********** x2
-         *        *
-         *        *
-         *        *
-       y2**********
-*/
 
     y1=(game_map_.start_y_%TILE_SIZE)*-1;
     y2= y1+SCREEN_HEIGHT;
@@ -90,6 +92,7 @@ void GameMap::DrawMap(SDL_Renderer *screen)
         map_y++;
     }
 }
+
 
 
 
