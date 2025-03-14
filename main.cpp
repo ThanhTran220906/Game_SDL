@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     while(!is_quit){
 
         fps.game_start();
-
+        if(p_player.GetHealth()<=0) break;
         if(SDL_PollEvent(&g_event)!=0){
             if(g_event.type==SDL_QUIT){
                 is_quit=true;
@@ -106,6 +106,20 @@ int main(int argc, char* argv[])
         game_map.DrawMap(g_screen);
         //
         bulletlist=p_player.Get_Bulletlist();
+
+        //
+        for(int i=0;i<threatlist.size();i++){
+        threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
+        threatlist[i]->Attack_player(p_player);
+        threatlist[i]->MovetoPlayer(p_player, map_data);
+        threatlist[i]->AutoMoveThreat(map_data);
+        threatlist[i]->Bullet_to_threat(bulletlist);
+        threatlist[i]->Show(g_screen);
+        if(threatlist[i]->Get_health()==0) threatlist.erase(threatlist.begin()+i);
+    }
+        p_player.Set_Bulletlist(bulletlist);
+        game_map.SetThreatList(threatlist);
+
         //xu li dan
         for(int i=0;i<bulletlist.size();i++){
             bulletlist[i]->CheckToMap(map_data);
@@ -115,19 +129,6 @@ int main(int argc, char* argv[])
 
         }
         p_player.Set_Bulletlist(bulletlist);
-        //
-        for(int i=0;i<threatlist.size();i++){
-        threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
-        threatlist[i]->MovetoPlayer(p_player, map_data);
-        threatlist[i]->AutoMoveThreat(map_data);
-        threatlist[i]->SetBulletList(bulletlist);
-        threatlist[i]->Bullet_to_threat();
-        threatlist[i]->Show(g_screen);
-        if(threatlist[i]->Get_health()==0) threatlist.erase(threatlist.begin()+i);
-    }
-        p_player.Set_Bulletlist(bulletlist);
-        game_map.SetThreatList(threatlist);
-
 
         SDL_RenderPresent(g_screen);
         int real_time_loop=fps.get_ticks();
@@ -139,4 +140,5 @@ int main(int argc, char* argv[])
 
 
     close();
+    return 1;
 }

@@ -17,11 +17,13 @@ MainObject::MainObject()
     input_type_.up_=0;
     input_type_.down_=0;
 
-    on_ground=0;
+    on_ground_=0;
 
     map_x_=0;
     map_y_=0;
-    count_coins=0;
+    count_coins_=0;
+
+    current_health_=10;
 }
 
 MainObject::~MainObject()
@@ -82,7 +84,7 @@ void MainObject::Show(SDL_Renderer *des)
 
     SDL_RenderCopy(des,p_object_,current_clips,&renderQuad);
 
-
+    RenderHealthBar(des);
 
 }
 
@@ -161,9 +163,9 @@ void MainObject::DoPlayer(Map &map_data)
     if(input_type_.right_==1) x_val_+=PLAYER_SPEED;
 
     if(input_type_.jump_==1) {
-        if(on_ground!=0){
+        if(on_ground_!=0){
             y_val_=-JUMP_VAL;
-            on_ground--;
+            on_ground_--;
         }
         input_type_.jump_=0;
     }
@@ -236,7 +238,7 @@ void MainObject::CheckToMap(Map &map_data)
     y1=(y_pos_+y_val_)/TILE_SIZE;
     y2=(y_pos_+y_val_+height_frame_-1)/TILE_SIZE;
 
-    if(on_ground==0||on_ground==1) frame_=0;
+    if(on_ground_==0||on_ground_==1) frame_=0;
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
 
         if(y_val_>0){// down
@@ -244,7 +246,7 @@ void MainObject::CheckToMap(Map &map_data)
                 y_pos_ = y2 * TILE_SIZE;
                 y_pos_ -= height_frame_;
                 y_val_ = 0;
-                on_ground=2;
+                on_ground_=2;
             }
         }
         if(y_val_<0){
@@ -268,11 +270,28 @@ void MainObject::CheckToMap(Map &map_data)
 void MainObject::earn_coin(int &val)
 {
     if(val==COIN_TILE){
-        count_coins++;
+        count_coins_++;
         val=0;
     }
 }
 
+void MainObject::RenderHealthBar(SDL_Renderer* renderer) {
+    int bar_width = 50;  // Độ dài thanh máu
+    int bar_height = 5;  // Độ cao thanh máu
+    int x = rect_.x;  // Vị trí ngang theo tọa độ của Threat
+    int y = rect_.y - 10;  // Đặt thanh máu ngay trên đầu Threat
+
+    // Viền đen của thanh máu
+    SDL_Rect border = {x, y, bar_width, bar_height};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Màu đen
+    SDL_RenderFillRect(renderer, &border);
+
+    // Thanh máu (màu đỏ)
+    float health_ratio = (float)current_health_ / PLAYER_MAX_HEALTH;
+    SDL_Rect health = {x, y, (int)(bar_width * health_ratio), bar_height};
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // Màu đỏ
+    SDL_RenderFillRect(renderer, &health);
+}
 
 
 

@@ -9,6 +9,7 @@
 #define MAX_FALL_SPEED 15
 #define PLAYER_SPEED 18
 #define JUMP_VAL 17
+#define PLAYER_MAX_HEALTH 10
 
 #define COME_BACK_TIME 1000
 
@@ -43,6 +44,11 @@ public:
     void Set_Bulletlist(vector <BulletObject*> v ){ bulletlist=v;};
     vector<BulletObject*> Get_Bulletlist(){return bulletlist;};
 
+    void SetHealth(int health) { current_health_=health;};
+    int GetHealth(){return current_health_;};
+
+    void RenderHealthBar(SDL_Renderer* renderer);
+
 private:
     float x_val_;
     float y_val_;
@@ -58,13 +64,14 @@ private:
     int frame_;//thứ tự của frame trong 8 frame
     int status_;// sang trai hay sang phai
 
-    int on_ground;
+    int on_ground_;
 
     int map_x_;
     int map_y_;
 
-    int count_coins;
+    int count_coins_;
 
     vector<BulletObject*> bulletlist;
 
+    int current_health_;
 };

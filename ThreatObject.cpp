@@ -17,8 +17,10 @@ ThreatObject::ThreatObject()
     map_x_=0;
     map_y_=0;
 
-    health=1;
-    near_player=false;
+    current_health=5;
+    move_to_player=false;
+    is_attack_player=false;
+    delay=0;
 }
 
 ThreatObject::~ThreatObject()
@@ -57,11 +59,17 @@ void ThreatObject::Show(SDL_Renderer *des)
     if(status_==WALK_LEFT){
         LoadImg("img//threat_left.png",des);
     }
-    else {
+    else if(status_==WALK_RIGHT) {
         LoadImg("img//threat_right.png",des);
     }
+    else if(status_==ATTACK_LEFT){
+        LoadImg("img//attack_left.png",des);
+    }
+    else if(status_==ATTACK_RIGHT){
+        LoadImg("img//attack_right.png",des);
+    }
 
-        frame_++;
+        if(!is_attack_player) {frame_++;}
         if(frame_>=8) frame_=0;
 
     rect_.x=x_pos_-map_x_;
@@ -75,13 +83,15 @@ void ThreatObject::Show(SDL_Renderer *des)
 
     SDL_RenderCopy(des,p_object_,current_clips,&renderQuad);
 
+    // Vẽ thanh máu
+    RenderHealthBar(des);
 
 }
 
 
 
 void ThreatObject::AutoMoveThreat(Map &map_data)
-{   if(near_player==false){
+{   if(move_to_player==false && is_attack_player==false){
         x_val_=0;
 
         if(status_==WALK_LEFT) x_val_-=THREAT_VAL;
@@ -130,11 +140,17 @@ void ThreatObject::CheckToMap(Map &map_data)
 }
 void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
 {
-    if(sqrt(pow(player.Get_x_pos()-x_pos_,2)+pow(player.Get_y_pos()-y_pos_,2))<300){
-        near_player=true;
-        x_val_=THREAT_VAL*(player.Get_x_pos()-x_pos_)/abs(player.Get_x_pos()-x_pos_);
-        if(x_val_<0) status_=WALK_LEFT;
-        else status_=WALK_RIGHT;
+    int dx = player.Get_x_pos() - x_pos_;
+    int dy = player.Get_y_pos() - y_pos_;
+
+    if(dx * dx + dy * dy < 90000 && !is_attack_player) { // 300^2 = 90000
+        move_to_player = true;
+
+        if (dx != 0) {
+            x_val_ = THREAT_VAL * (dx / abs(dx)); // Tránh chia cho 0
+        }
+        status_ = (x_val_ < 0) ? WALK_LEFT : WALK_RIGHT;
+
         int height_min =min(height_frame_,TILE_SIZE);
         int x1 = (x_pos_ + x_val_) / TILE_SIZE;
         int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
@@ -158,10 +174,10 @@ void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
     x_pos_+=x_val_;
 
     }
-    else {near_player=false;}
+    else {move_to_player=false;}
 }
 
-void ThreatObject::Bullet_to_threat()
+void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist)
 {
     for(int i=0;i<bulletlist.size();i++){
         SDL_Rect r=bulletlist[i]->GetRect();
@@ -171,13 +187,66 @@ void ThreatObject::Bullet_to_threat()
            || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_))
             {
                 bulletlist[i]->Set_is_move(false);
-                health--;
+                current_health--;
             }
     }
 }
 
+void ThreatObject::Attack_player(MainObject &player)
+{
+    if(is_attack_player==true){
+        if(delay) {frame_++;delay=!delay;}
+        else {delay=!delay;}
+        if(frame_==4 && delay){
+            SDL_Rect r=player.GetRect();
+            //xu li va cham
+        if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
+           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
+           )
+            {
+                int health_player=player.GetHealth();
+                health_player--;
+                player.SetHealth(health_player);
+            }
+        }
 
+        if(frame_>=8) {
+            is_attack_player=false;
+            frame_=0;
+            status_ = (x_val_ < 0) ? WALK_LEFT : WALK_RIGHT;
+        }
+    }
+    if(!is_attack_player && (player.Get_x_pos()-x_pos_)*(player.Get_x_pos()-x_pos_) +
+        (player.Get_y_pos()-y_pos_)*(player.Get_y_pos()-y_pos_) < 2500){
+        is_attack_player=true;
+        if(player.Get_x_pos()-x_pos_<0) status_=ATTACK_LEFT;
+        else if(player.Get_x_pos()-x_pos_>0) status_=ATTACK_RIGHT;
+        frame_=0;
+    }
 
+}
+
+void ThreatObject::RenderHealthBar(SDL_Renderer* renderer) {
+    int bar_width = 50;  // Độ dài thanh máu
+    int bar_height = 5;  // Độ cao thanh máu
+    int x = rect_.x;  // Vị trí ngang theo tọa độ của Threat
+    int y = rect_.y - 10;  // Đặt thanh máu ngay trên đầu Threat
+
+    // Viền đen của thanh máu
+    SDL_Rect border = {x, y, bar_width, bar_height};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Màu đen
+    SDL_RenderFillRect(renderer, &border);
+
+    // Thanh máu (màu đỏ)
+    float health_ratio = (float)current_health / THREAT_MAX_HEALTH;
+    SDL_Rect health = {x, y, (int)(bar_width * health_ratio), bar_height};
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // Màu đỏ
+    SDL_RenderFillRect(renderer, &health);
+}
 
 
 

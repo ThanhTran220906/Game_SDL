@@ -7,6 +7,7 @@
 #include "MainObject.h"
 
 #define THREAT_VAL 9
+#define THREAT_MAX_HEALTH 5
 
 class ThreatObject: public BaseObject
 {
@@ -18,6 +19,8 @@ public:
     {
         WALK_RIGHT=0,
         WALK_LEFT=1,
+        ATTACK_LEFT=2,
+        ATTACK_RIGHT=3,
     };
 
     bool LoadImg(string path,SDL_Renderer *screen);
@@ -31,11 +34,13 @@ public:
     };
     void SetMapXY(int x,int y){ map_x_=x; map_y_=y;}
     void MovetoPlayer(MainObject player,Map map_data);
-    void SetBulletList(vector<BulletObject*> v){bulletlist=v;};
-    vector<BulletObject*> GetBulletList(){ return bulletlist;};
 
-    void Bullet_to_threat();
-    int Get_health(){return health;};
+    void Bullet_to_threat(vector <BulletObject*> &bulletlist);
+    int Get_health(){return current_health;};
+
+    void Attack_player(MainObject &player);
+
+    void RenderHealthBar(SDL_Renderer* renderer);
 
 private:
     float x_val_;
@@ -56,10 +61,10 @@ private:
     int map_x_;
     int map_y_;
 
-    int health;
+    int current_health;
 
-    bool near_player;
-    vector<BulletObject*> bulletlist;
-
+    bool move_to_player;
+    bool is_attack_player;
+    bool delay;
 };
 

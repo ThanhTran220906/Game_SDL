@@ -68,3 +68,68 @@
 	"BulletObject.h"
 	"MainObject.h"
 
+1740484662 source:c:\users\legion\documents\codeblock\game_sdldemo\baseobject.cpp
+	<bits/stdc++.h>
+	"BaseObject.h"
+
+1741831229 c:\users\legion\documents\codeblock\game_sdldemo\baseobject.h
+	"CommonFunc.h"
+
+1740830472 c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.h
+	<bits/stdc++.h>
+	<SDL.h>
+	<SDL_image.h>
+	<SDL_mixer.h>
+	<SDL_ttf.h>
+
+1741831229 source:c:\users\legion\documents\codeblock\game_sdldemo\bulletobject.cpp
+	"BulletObject.h"
+
+1741832152 c:\users\legion\documents\codeblock\game_sdldemo\bulletobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+
+1740378200 source:c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.cpp
+	<bits/stdc++.h>
+	"CommonFunc.h"
+
+1741831229 source:c:\users\legion\documents\codeblock\game_sdldemo\game_map.cpp
+	"game_map.h"
+	<bits/stdc++.h>
+
+1741831229 c:\users\legion\documents\codeblock\game_sdldemo\game_map.h
+	"CommonFunc.h"
+	"BaseObject.h"
+	"ThreatObject.h"
+
+1741942092 c:\users\legion\documents\codeblock\game_sdldemo\threatobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+	"BulletObject.h"
+	"MainObject.h"
+
+1741942505 c:\users\legion\documents\codeblock\game_sdldemo\mainobject.h
+	"CommonFunc.h"
+	"BaseObject.h"
+	"BulletObject.h"
+
+1740769353 source:c:\users\legion\documents\codeblock\game_sdldemo\imptimer.cpp
+	"ImpTimer.h"
+	"CommonFunc.h"
+
+1740811727 c:\users\legion\documents\codeblock\game_sdldemo\imptimer.h
+
+1741940614 source:c:\users\legion\documents\codeblock\game_sdldemo\main.cpp
+	"BaseObject.h"
+	"game_map.h"
+	"MainObject.h"
+	"ImpTimer.h"
+
+1741943056 source:c:\users\legion\documents\codeblock\game_sdldemo\mainobject.cpp
+	"MainObject.h"
+	<bits/stdc++.h>
+
+1741942408 source:c:\users\legion\documents\codeblock\game_sdldemo\threatobject.cpp
+	"ThreatObject.h"
+	<bits/stdc++.h>
+
