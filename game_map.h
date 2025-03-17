@@ -9,10 +9,10 @@
 #define THREAT_TILE 6
 
 class TileMat : public BaseObject
-{
+{    void SetThreatList(vector<ThreatObject*> v);
 public:
     TileMat(){;};
-    ~TileMat(){ Free(); };
+    ~TileMat(){;};
 };
 
 class GameMap
@@ -21,15 +21,17 @@ public:
     GameMap(){;};
     ~GameMap(){;};
 
-    void LoadMap(char *name);
+    void LoadMap(string name);
     void LoadTiles(SDL_Renderer* screen);
     void DrawMap(SDL_Renderer* screen);
 
     Map GetMap() const {return game_map_;};
     void SetMap(Map &map_data) { game_map_=map_data; }
 
-    void SetThreatList(vector<ThreatObject*> v){ threatlist=v; };
+    void SpawnThreat();
+
     vector<ThreatObject*> GetThreatList(){ return threatlist;};
+    void SetThreatList(vector<ThreatObject*> &v) { threatlist = v;};
 
 private:
     Map game_map_;

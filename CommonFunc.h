@@ -14,6 +14,15 @@ static SDL_Window *g_window =NULL;
 static SDL_Renderer *g_screen =NULL;
 static SDL_Event g_event;
 
+//game
+extern bool gameRunning;
+extern bool Title;
+extern bool LevelChoose;
+extern bool Pause;
+extern bool GameOver;
+extern bool is_quit;
+
+//
 
 const int SCREEN_WIDTH=1200;
 const int SCREEN_HEIGHT=640;
@@ -41,7 +50,6 @@ struct Map
     int max_y_;//sau nay la 10*TILE_SIZE va 400*TILE_SIZE
 
     int tile[MAX_MAP_Y][MAX_MAP_X];
-    char* file_name_;
 };
 
 struct Input

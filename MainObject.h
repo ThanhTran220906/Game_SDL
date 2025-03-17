@@ -38,16 +38,21 @@ public:
 
     void earn_coin(int &val);
 
+    void SetPos(int x,int y) { x_pos_=x;y_pos_=y; };
     float Get_x_pos(){ return x_pos_;};
     float Get_y_pos(){ return y_pos_;};
 
-    void Set_Bulletlist(vector <BulletObject*> v ){ bulletlist=v;};
+    void Set_Bulletlist(const vector<BulletObject*>& v) { bulletlist = v;};
     vector<BulletObject*> Get_Bulletlist(){return bulletlist;};
 
     void SetHealth(int health) { current_health_=health;};
     int GetHealth(){return current_health_;};
 
     void RenderHealthBar(SDL_Renderer* renderer);
+
+    void CompleteLevel(int &val);
+    void SetBoolComplete(bool v) { complete = v; };
+    bool GetBoolComplete() { return complete; };
 
 private:
     float x_val_;
@@ -63,6 +68,7 @@ private:
     Input input_type_;
     int frame_;//thứ tự của frame trong 8 frame
     int status_;// sang trai hay sang phai
+    int last_status_;
 
     int on_ground_;
 
@@ -74,4 +80,6 @@ private:
     vector<BulletObject*> bulletlist;
 
     int current_health_;
+
+    bool complete;
 };

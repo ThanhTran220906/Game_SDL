@@ -40,8 +40,14 @@
 		<Unit filename="CommonFunc.h" />
 		<Unit filename="ImpTimer.cpp" />
 		<Unit filename="ImpTimer.h" />
+		<Unit filename="Level.cpp" />
+		<Unit filename="Level.h" />
 		<Unit filename="MainObject.cpp" />
 		<Unit filename="MainObject.h" />
+		<Unit filename="Menu.cpp" />
+		<Unit filename="Menu.h" />
+		<Unit filename="TextObject.cpp" />
+		<Unit filename="TextObject.h" />
 		<Unit filename="ThreatObject.cpp" />
 		<Unit filename="ThreatObject.h" />
 		<Unit filename="game_map.cpp" />

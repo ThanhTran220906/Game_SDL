@@ -23,12 +23,12 @@ MainObject::MainObject()
     map_y_=0;
     count_coins_=0;
 
-    current_health_=10;
+    current_health_=PLAYER_MAX_HEALTH;
 }
 
 MainObject::~MainObject()
 {
-    Free();
+
 }
 
 bool MainObject::LoadImg(string path,SDL_Renderer *screen)
@@ -56,6 +56,7 @@ void MainObject::set_clips()
         }
     }
 }
+
 
 void MainObject::Show(SDL_Renderer *des)
 {
@@ -93,14 +94,14 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
     if(events.type==SDL_KEYDOWN){
         switch(events.key.keysym.sym)
         {
-        case SDLK_RIGHT:
+        case SDLK_d:
             {
                 status_=WALK_RIGHT;
                 input_type_.right_=1;
                 input_type_.left_=0;
             }
             break;
-        case SDLK_LEFT:
+        case SDLK_a:
             {
                 status_=WALK_LEFT;
                 input_type_.left_=1;
@@ -112,13 +113,13 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
     else if(events.type==SDL_KEYUP){
         switch(events.key.keysym.sym)
         {
-        case SDLK_RIGHT:
+        case SDLK_d:
             {
                 input_type_.right_=0;
                 input_type_.left_=0;
             }
             break;
-        case SDLK_LEFT:
+        case SDLK_a:
             {
                 input_type_.left_=0;
                 input_type_.right_=0;
@@ -127,12 +128,12 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
         }
     }
     if(events.type==SDL_KEYDOWN){
-        if(events.key.keysym.sym==SDLK_UP){
+        if(events.key.keysym.sym==SDLK_w){
             input_type_.jump_=1;
         }
     }
     else if(events.type==SDL_KEYUP){
-        if(events.key.keysym.sym==SDLK_UP){
+        if(events.key.keysym.sym==SDLK_w){
             input_type_.jump_=0;
         }
     }
@@ -141,10 +142,16 @@ void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
     if(events.type==SDL_KEYDOWN){//tao dan
         if(events.key.keysym.sym==SDLK_SPACE){
             BulletObject *bullet_tmp= new BulletObject();
-            bullet_tmp->CreateBullet(x_pos_+20,y_pos_+15,map_x_,map_y_);
             bullet_tmp->LoadImg("img//bullet.png",screen);
-            if(status_==WALK_RIGHT) {bullet_tmp->SetVal(30,0);}
-            if(status_==WALK_LEFT) {bullet_tmp->SetVal(-30,0);}
+            if(status_==WALK_RIGHT) {
+                bullet_tmp->CreateBullet(x_pos_+30,y_pos_+15,map_x_,map_y_);
+                bullet_tmp->SetVal(30,0);
+            }
+
+            if(status_==WALK_LEFT) {
+                bullet_tmp->CreateBullet(x_pos_+10,y_pos_+15,map_x_,map_y_);
+                bullet_tmp->SetVal(-30,0);
+            }
             bulletlist.push_back(bullet_tmp);
         }
     }
@@ -191,18 +198,32 @@ void MainObject::CheckToMap(Map &map_data)
     int y1=0;
     int y2=0;
     //earn coin
-    x1 = (x_pos_ -10) / TILE_SIZE;
-    x2 = (x_pos_ +width_frame_+10) / TILE_SIZE;
+    x1 = (x_pos_ +x_val_-1) / TILE_SIZE;
+    x2 = (x_pos_ +width_frame_+x_val_+1) / TILE_SIZE;
 
-    y1=(y_pos_-10)/TILE_SIZE;
-    y2=(y_pos_+height_frame_+10)/TILE_SIZE;
+    y1=(y_pos_+y_val_-1)/TILE_SIZE;
+    y2=(y_pos_+height_frame_+y_val_+1)/TILE_SIZE;
     int y3=(y1+y2)/2;
+    int x3=(x1+x2)/2;
     earn_coin(map_data.tile[y1][x1]);
     earn_coin(map_data.tile[y1][x2]);
+    earn_coin(map_data.tile[y1][x3]);
     earn_coin(map_data.tile[y2][x1]);
     earn_coin(map_data.tile[y2][x2]);
+    earn_coin(map_data.tile[y2][x3]);
     earn_coin(map_data.tile[y3][x1]);
     earn_coin(map_data.tile[y3][x2]);
+    earn_coin(map_data.tile[y3][x3]);
+
+    CompleteLevel(map_data.tile[y1][x1]);
+    CompleteLevel(map_data.tile[y1][x2]);
+    CompleteLevel(map_data.tile[y1][x3]);
+    CompleteLevel(map_data.tile[y2][x1]);
+    CompleteLevel(map_data.tile[y2][x2]);
+    CompleteLevel(map_data.tile[y2][x3]);
+    CompleteLevel(map_data.tile[y3][x1]);
+    CompleteLevel(map_data.tile[y3][x2]);
+    CompleteLevel(map_data.tile[y3][x3]);
 
     //thêm cơ chế đổi đạn vào đây
 
@@ -264,7 +285,7 @@ void MainObject::CheckToMap(Map &map_data)
     if(x_pos_<0) x_pos_=0;
     if(x_pos_+width_frame_>map_data.max_x_) x_pos_=map_data.max_x_-width_frame_-1;
 
-    if(y_pos_>SCREEN_WIDTH) y_pos_=0;
+    if(y_pos_>SCREEN_HEIGHT+100) current_health_=0;
 }
 
 void MainObject::earn_coin(int &val)
@@ -293,6 +314,12 @@ void MainObject::RenderHealthBar(SDL_Renderer* renderer) {
     SDL_RenderFillRect(renderer, &health);
 }
 
+void MainObject::CompleteLevel(int &val)
+{
+    if(val==11){
+        complete=true;
+    }
+}
 
 
 

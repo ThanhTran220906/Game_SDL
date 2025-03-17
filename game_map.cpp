@@ -2,8 +2,9 @@
 #include "game_map.h"
 #include <bits/stdc++.h>
 
-void GameMap::LoadMap(char* name)
+void GameMap::LoadMap(string name)
 {
+    game_map_.tile[10][400] ={0};
     fstream fs;
     fs.open(name);
 
@@ -14,14 +15,6 @@ void GameMap::LoadMap(char* name)
     for(int i=0;i<MAX_MAP_Y;i++){
         for(int j=0;j<MAX_MAP_X;j++){
             fs>>game_map_.tile[i][j];
-            //Spawn Threat
-            if(game_map_.tile[i][j]==6){
-                ThreatObject *thread_tmp =new ThreatObject;
-                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE+12);
-                game_map_.tile[i][j]=0;
-                threatlist.push_back(thread_tmp);
-            }
-            //
             int val =game_map_.tile[i][j];
             if(val>0) {
                 if(j>game_map_.max_x_){
@@ -40,13 +33,12 @@ void GameMap::LoadMap(char* name)
     game_map_.start_x_=0;
     game_map_.start_y_=0;
 
-    game_map_.file_name_=name;
     fs.close();
 }
 
 void GameMap::LoadTiles(SDL_Renderer* screen)
 {
-    char file_img[10];
+    char file_img[20];
     FILE *fp=NULL;
 
     for(int i=0;i<MAX_TILES;i++){
@@ -93,10 +85,20 @@ void GameMap::DrawMap(SDL_Renderer *screen)
     }
 }
 
-
-
-
-
+void GameMap::SpawnThreat()
+{
+    //Spawn Threat
+    for(int i=0;i<MAX_MAP_Y;i++){
+        for(int j=0;j<MAX_MAP_X;j++){
+            if(game_map_.tile[i][j]==20){
+                ThreatObject *thread_tmp =new ThreatObject;
+                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE+12);
+                game_map_.tile[i][j]=0;
+                threatlist.push_back(thread_tmp);
+            }
+        }
+    }      //
+}
 
 
 

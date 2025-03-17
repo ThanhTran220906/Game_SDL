@@ -10,6 +10,9 @@ ThreatObject::ThreatObject()
     frame_=0;
     x_pos_=0;
     y_pos_=0;
+    x_val_=0;
+    y_val_=0;
+
     width_frame_=0;
     height_frame_ =0;
     status_=WALK_LEFT;
@@ -25,7 +28,7 @@ ThreatObject::ThreatObject()
 
 ThreatObject::~ThreatObject()
 {
-    Free();
+
 }
 
 bool ThreatObject::LoadImg(string path,SDL_Renderer *screen)
@@ -134,8 +137,11 @@ void ThreatObject::CheckToMap(Map &map_data)
         }
     }
 
-    x_pos_+=x_val_;
-    y_pos_+=y_val_;
+
+    x_pos_ += x_val_;
+    y_pos_ += y_val_;
+
+
 
 }
 void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
@@ -180,6 +186,7 @@ void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
 void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist)
 {
     for(int i=0;i<bulletlist.size();i++){
+        if(bulletlist[i]->Get_is_move()){
         SDL_Rect r=bulletlist[i]->GetRect();
         if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
            || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
@@ -189,6 +196,7 @@ void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist)
                 bulletlist[i]->Set_is_move(false);
                 current_health--;
             }
+        }
     }
 }
 

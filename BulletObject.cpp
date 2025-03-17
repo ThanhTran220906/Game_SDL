@@ -14,7 +14,7 @@ BulletObject::BulletObject()
 
 BulletObject::~BulletObject()
 {
-    Free();
+
 }
 
 void BulletObject::CreateBullet(int x,int y,int mapx,int mapy)

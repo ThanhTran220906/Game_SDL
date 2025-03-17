@@ -42,6 +42,7 @@ public:
 
     void RenderHealthBar(SDL_Renderer* renderer);
 
+
 private:
     float x_val_;
     float y_val_;
