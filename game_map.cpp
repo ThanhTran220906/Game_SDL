@@ -92,7 +92,7 @@ void GameMap::SpawnThreat()
         for(int j=0;j<MAX_MAP_X;j++){
             if(game_map_.tile[i][j]==20){
                 ThreatObject *thread_tmp =new ThreatObject;
-                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE+12);
+                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE-27);
                 game_map_.tile[i][j]=0;
                 threatlist.push_back(thread_tmp);
             }

@@ -16,6 +16,7 @@ ThreatObject::ThreatObject()
     width_frame_=0;
     height_frame_ =0;
     status_=WALK_LEFT;
+    status_=0;
 
     map_x_=0;
     map_y_=0;
@@ -71,9 +72,29 @@ void ThreatObject::Show(SDL_Renderer *des)
     else if(status_==ATTACK_RIGHT){
         LoadImg("img//attack_right.png",des);
     }
+    else if(status_==RUN_RIGHT){
+        LoadImg("img//run_right.png",des);
+    }
+    else if(status_==RUN_LEFT){
+        LoadImg("img//run_left.png",des);
+    }
 
-        if(!is_attack_player) {frame_++;}
-        if(frame_>=8) frame_=0;
+    if(delay) {
+        frame_++;
+        delay=!delay;
+    }
+    else delay=!delay;
+
+    frame_=frame_%8;
+    if(status_==ATTACK_LEFT || status_==ATTACK_RIGHT) {
+        if(frame_>=6) {
+            is_attack_player=false;
+            frame_=0;
+            status_ = (x_val_ < 0) ? WALK_LEFT : WALK_RIGHT;
+            last_status_=status_;
+        }
+    }
+
 
     rect_.x=x_pos_-map_x_;
 
@@ -97,66 +118,49 @@ void ThreatObject::AutoMoveThreat(Map &map_data)
 {   if(move_to_player==false && is_attack_player==false){
         x_val_=0;
 
-        if(status_==WALK_LEFT) x_val_-=THREAT_VAL;
+        if(status_==WALK_LEFT) x_val_=-THREAT_VAL;
 
-        if(status_==WALK_RIGHT) x_val_+=THREAT_VAL;
+        if(status_==WALK_RIGHT) x_val_=+THREAT_VAL;
 
-        CheckToMap(map_data);
+        int height_min =min(height_frame_,TILE_SIZE);
+        int x1 = (x_pos_ + x_val_) / TILE_SIZE;
+        int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
+        int y1=(y_pos_)/TILE_SIZE;
+        int y2=(y_pos_+height_min-1)/TILE_SIZE;
+
+        if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+            if(x_val_>0){// right
+                if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE||map_data.tile[y2+1][x2]==BLANK_TILE){
+                    status_=WALK_LEFT;
+                    x_val_=0;
+                }
+            }
+            if(x_val_<0){
+                if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE||map_data.tile[y2+1][x1]==BLANK_TILE){
+                    status_=WALK_RIGHT;
+                    x_val_=0;
+                }
+            }
+        }
+
+        x_pos_ += x_val_;
+        y_pos_ += y_val_;
     }
 }
 
-void ThreatObject::CheckToMap(Map &map_data)
-{
-    int x1=0;
-    int x2=0;
 
-    int y1=0;
-    int y2=0;
-
-    //check horizontal
-    int height_min =min(height_frame_,TILE_SIZE);
-    x1 = (x_pos_ + x_val_) / TILE_SIZE;
-    x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
-
-    y1=(y_pos_)/TILE_SIZE;
-    y2=(y_pos_+height_min-1)/TILE_SIZE;
-
-    if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
-
-        if(x_val_>0){// right
-            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE||map_data.tile[y2+1][x2]==BLANK_TILE){
-                status_=WALK_LEFT;
-                x_val_=0;
-            }
-        }
-        if(x_val_<0){
-            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE||map_data.tile[y2+1][x1]==BLANK_TILE){
-                status_=WALK_RIGHT;
-                x_val_=0;
-            }
-        }
-    }
-
-
-    x_pos_ += x_val_;
-    y_pos_ += y_val_;
-
-
-
-}
 void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
 {
     int dx = player.Get_x_pos() - x_pos_;
     int dy = player.Get_y_pos() - y_pos_;
 
-    if(dx * dx + dy * dy < 90000 && !is_attack_player) { // 300^2 = 90000
+    if(dx * dx + dy * dy < 90000 && !is_attack_player) {
         move_to_player = true;
-
         if (dx != 0) {
-            x_val_ = THREAT_VAL * (dx / abs(dx)); // Tránh chia cho 0
+            x_val_ = THREAT_VAL * (dx / abs(dx))*1.8; // Tránh chia cho 0
         }
-        status_ = (x_val_ < 0) ? WALK_LEFT : WALK_RIGHT;
-
+        status_ = (x_val_ < 0) ? RUN_LEFT : RUN_RIGHT;
+        last_status_=status_;
         int height_min =min(height_frame_,TILE_SIZE);
         int x1 = (x_pos_ + x_val_) / TILE_SIZE;
         int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
@@ -178,9 +182,12 @@ void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
             }
         }
     x_pos_+=x_val_;
-
     }
-    else {move_to_player=false;}
+    else {
+        move_to_player=false;
+        if(last_status_==RUN_LEFT ||last_status_==RUN_RIGHT) { status_ = (x_val_ > 0) ? WALK_LEFT : WALK_RIGHT; last_status_=status_;}
+    }
+
 }
 
 void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist)
@@ -203,36 +210,28 @@ void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist)
 void ThreatObject::Attack_player(MainObject &player)
 {
     if(is_attack_player==true){
-        if(delay) {frame_++;delay=!delay;}
-        else {delay=!delay;}
-        if(frame_==4 && delay){
+        if(frame_==3 && delay){
             SDL_Rect r=player.GetRect();
             //xu li va cham
-        if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
-           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
-           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
-           || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
-           )
+            if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+               || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+               || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
+               || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
+               )
             {
                 int health_player=player.GetHealth();
                 health_player--;
                 player.SetHealth(health_player);
             }
         }
-
-        if(frame_>=8) {
-            is_attack_player=false;
-            frame_=0;
-            status_ = (x_val_ < 0) ? WALK_LEFT : WALK_RIGHT;
-        }
     }
     if(!is_attack_player && (player.Get_x_pos()-x_pos_)*(player.Get_x_pos()-x_pos_) +
         (player.Get_y_pos()-y_pos_)*(player.Get_y_pos()-y_pos_) < 2500){
         is_attack_player=true;
-        if(player.Get_x_pos()-x_pos_<0) status_=ATTACK_LEFT;
-        else if(player.Get_x_pos()-x_pos_>0) status_=ATTACK_RIGHT;
+        if(player.Get_x_pos()-x_pos_<0) {status_=ATTACK_LEFT; last_status_=status_;}
+        else if(player.Get_x_pos()-x_pos_>0) {status_=ATTACK_RIGHT; last_status_=status_;}
         frame_=0;
     }
 
@@ -241,7 +240,7 @@ void ThreatObject::Attack_player(MainObject &player)
 void ThreatObject::RenderHealthBar(SDL_Renderer* renderer) {
     int bar_width = 50;  // Độ dài thanh máu
     int bar_height = 5;  // Độ cao thanh máu
-    int x = rect_.x;  // Vị trí ngang theo tọa độ của Threat
+    int x = rect_.x + 20;  // Vị trí ngang theo tọa độ của Threat
     int y = rect_.y - 10;  // Đặt thanh máu ngay trên đầu Threat
 
     // Viền đen của thanh máu

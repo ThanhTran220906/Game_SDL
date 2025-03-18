@@ -6,7 +6,7 @@
 #include "BulletObject.h"
 #include "MainObject.h"
 
-#define THREAT_VAL 9
+#define THREAT_VAL 6
 #define THREAT_MAX_HEALTH 5
 
 class ThreatObject: public BaseObject
@@ -21,6 +21,8 @@ public:
         WALK_LEFT=1,
         ATTACK_LEFT=2,
         ATTACK_RIGHT=3,
+        RUN_LEFT=4,
+        RUN_RIGHT=5,
     };
 
     bool LoadImg(string path,SDL_Renderer *screen);
@@ -28,7 +30,7 @@ public:
     void set_clips();
 
     void AutoMoveThreat(Map &map_data);
-    void CheckToMap(Map &map_data);
+
     void Set_pos(int x,int y){
         x_pos_=x;y_pos_=y;
     };
@@ -58,6 +60,7 @@ private:
 
     int frame_;//thứ tự của frame trong 8 frame
     int status_;// sang trai hay sang phai
+    int last_status_;
 
     int map_x_;
     int map_y_;

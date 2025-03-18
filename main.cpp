@@ -22,11 +22,13 @@ bool InitData() {
 
     if (g_window == NULL) {
         success = false;
-    } else {
+    }
+    else {
         g_screen = SDL_CreateRenderer(g_window, -1, SDL_RENDERER_ACCELERATED);
         if (g_screen == NULL) {
             success = false;
-        } else {
+        }
+        else {
             SDL_SetRenderDrawColor(g_screen, 255, 255, 255, 255);
             if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) success = false;
         }
@@ -52,7 +54,17 @@ void close() {
     TTF_Quit();
 }
 
+template <typename T>
+void ClearVector(vector<T*>& v) {
+    for (int i = v.size() - 1; i >= 0; i--) {
+        delete v[i];
+        v[i] = nullptr;
+        v.erase(v.begin() + i);
+    }
+}
+
 int main(int argc, char* argv[]) {
+    //init
     ImpTimer fps;
     titleScreen title;
     Level level;
@@ -60,14 +72,12 @@ int main(int argc, char* argv[]) {
     GameOverMenu game_over;
     if (!InitData() || !Loadbackground()) return -1;
 
+    //map
     GameMap game_map;
     string file_map="";
-
-
     vector<ThreatObject*> threatlist ;
 
-
-
+    //player
     MainObject p_player;
     p_player.LoadImg("img//player_right.png", g_screen);
     p_player.set_clips();
@@ -80,26 +90,18 @@ int main(int argc, char* argv[]) {
             //quit
             if (g_event.type == SDL_QUIT) {
                 is_quit = true;
-        }
+            }
             //xu li game
+            if (g_event.type == SDL_KEYDOWN) {
                 if (Title) {
                     title.handleEvents(g_event);
-                    }
-
+                }
                 else if (Pause) {
                     pause.handleEvents(g_event);
                     if(pause.GetBoolLoading()){
-                        for(int i=bulletlist.size()-1;i>=0;i--){
-                            delete bulletlist[i];
-                            bulletlist[i]=nullptr;
-                            bulletlist.erase(bulletlist.begin()+i);
-                        }
+                        ClearVector(bulletlist);
                         p_player.Set_Bulletlist(bulletlist);
-                        for(int i=threatlist.size()-1;i>=0;--i){
-                            delete threatlist[i];
-                            threatlist[i]=nullptr;
-                            threatlist.erase(threatlist.begin()+i);
-                        }
+                        ClearVector(threatlist);
                         game_map.SetThreatList(threatlist);
                         pause.SetBoolLoading(false);
                     }
@@ -119,13 +121,6 @@ int main(int argc, char* argv[]) {
                         level.SetBoolLoading(false);
                     }
                 }
-                else if(gameRunning){
-                    if(g_event.key.keysym.sym == SDLK_ESCAPE){
-                        gameRunning = false;
-                        Pause =true;
-                    }
-                    p_player.HandleInputAction(g_event,g_screen);
-                }
                 else if(GameOver){
                     game_over.handleEvents(g_event,p_player);
                     if(game_over.GetBoolLoading()){
@@ -140,24 +135,29 @@ int main(int argc, char* argv[]) {
                         game_over.SetBoolLoading(false);
                     }
                 }
-    }
-
+            }
+            if(gameRunning){
+                if(g_event.key.keysym.sym == SDLK_ESCAPE){
+                    gameRunning = false;
+                    Pause =true;
+                    p_player.Clear();
+                }
+                p_player.HandleInputAction(g_event,g_screen);
+            }
+        }
         if (Title) {
             title.update();
             title.render(g_screen);
         }
-
-        else if (LevelChoose){
-            level.update();
-            level.render(g_screen);
-        }
-
         else if (Pause) {
             pause.update();
             pause.render(g_screen);
         }
-
-        else if (GameOver) {
+        else if (LevelChoose){
+            level.update();
+            level.render(g_screen);
+        }
+        else if(GameOver){
             game_over.update();
             game_over.render(g_screen);
         }
@@ -171,16 +171,16 @@ int main(int argc, char* argv[]) {
             g_background.Render(g_screen, NULL);
 
             Map map_data = game_map.GetMap();
-            p_player.SetMapXY(map_data.start_x_, map_data.start_y_);
 
+            p_player.SetMapXY(map_data.start_x_, map_data.start_y_);
             p_player.DoPlayer(map_data);
             p_player.Show(g_screen);
 
             game_map.SetMap(map_data);
             game_map.DrawMap(g_screen);
-
+            //lay bulletlist u player
             bulletlist = p_player.Get_Bulletlist();
-            cerr<<threatlist.size()<<endl;
+            //xu li threatlist
             for(int i=threatlist.size()-1;i>=0;--i){
                 threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
                 threatlist[i]->Attack_player(p_player);
@@ -193,10 +193,7 @@ int main(int argc, char* argv[]) {
                     threatlist[i]=nullptr;
                     threatlist.erase(threatlist.begin()+i);
                 }
-
-
-        }
-
+            }
             //xu li dan
             for(int i=bulletlist.size()-1;i>=0;--i){
                 bulletlist[i]->CheckToMap(map_data);
@@ -210,64 +207,42 @@ int main(int argc, char* argv[]) {
                 bulletlist[i]->Render(g_screen,NULL);
 
             }
-            p_player.Set_Bulletlist(bulletlist);
+            p_player.Set_Bulletlist(bulletlist);//cap nhat lai bulletlist cua player
 
-            SDL_RenderPresent(g_screen);
-
+            SDL_RenderPresent(g_screen); //in ra man hinh
+            //xu li fps
             int real_time_loop = fps.get_ticks();
             if (real_time_loop < one_frame_time) {
                 SDL_Delay(one_frame_time - real_time_loop);
             }
+            //player die
             if (p_player.GetHealth() <= 0) {
                 GameOver = true;
                 gameRunning = false;
-                for(int i=bulletlist.size()-1;i>=0;--i){
-                    delete bulletlist[i];
-                    bulletlist[i]=nullptr;
-                    bulletlist.erase(bulletlist.begin()+i);
-                }
+                ClearVector(bulletlist);
                 p_player.Set_Bulletlist(bulletlist);
-                for(int i=threatlist.size()-1;i>=0;--i){
-                    delete threatlist[i];
-                    threatlist[i]=nullptr;
-                    threatlist.erase(threatlist.begin()+i);
-                }
+                ClearVector(threatlist);
                 game_map.SetThreatList(threatlist);
+                p_player.Clear();
             }
-
+            //winning
             if(p_player.GetBoolComplete()){
                 LevelChoose = true;
                 gameRunning = false;
                 level.SaveLevel();
-                for(int i=bulletlist.size()-1;i>=0;--i){
-                    delete bulletlist[i];
-                    bulletlist[i]=nullptr;
-                    bulletlist.erase(bulletlist.begin()+i);
-                }
+                ClearVector(bulletlist);
                 p_player.Set_Bulletlist(bulletlist);
-                for(int i=threatlist.size()-1;i>=0;--i){
-                    delete threatlist[i];
-                    threatlist[i]=nullptr;
-                    threatlist.erase(threatlist.begin()+i);
-                }
+                ClearVector(threatlist);
                 game_map.SetThreatList(threatlist);
                 p_player.SetBoolComplete(false);
+                p_player.Clear();
             }
         }
     }
-    for(int i=bulletlist.size()-1;i>=0;--i){
-        delete bulletlist[i];
-        bulletlist[i]=nullptr;
-        bulletlist.erase(bulletlist.begin()+i);
-    }
+    //xoa het tat ca
+    ClearVector(bulletlist);
     p_player.Set_Bulletlist(bulletlist);
-    for(int i=threatlist.size()-1;i>=0;--i){
-        delete threatlist[i];
-        threatlist[i]=nullptr;
-        threatlist.erase(threatlist.begin()+i);
-    }
+    ClearVector(threatlist);
     game_map.SetThreatList(threatlist);
-
     close();
-    return 0;
 }

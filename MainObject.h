@@ -7,7 +7,7 @@
 
 #define GRAVITY 1.3
 #define MAX_FALL_SPEED 15
-#define PLAYER_SPEED 18
+#define PLAYER_SPEED 9
 #define JUMP_VAL 17
 #define PLAYER_MAX_HEALTH 10
 
@@ -21,8 +21,12 @@ public:
 
     enum WalkType
     {
-        WALK_RIGHT=0,
-        WALK_LEFT=1,
+        IDLE_RIGHT=0,
+        IDLE_LEFT=1,
+        WALK_RIGHT=2,
+        WALK_LEFT=3,
+        RUN_LEFT=4,
+        RUN_RIGHT=5,
     };
 
     bool LoadImg(string path,SDL_Renderer *screen);
@@ -54,6 +58,8 @@ public:
     void SetBoolComplete(bool v) { complete = v; };
     bool GetBoolComplete() { return complete; };
 
+    void Clear();
+
 private:
     float x_val_;
     float y_val_;
@@ -68,7 +74,6 @@ private:
     Input input_type_;
     int frame_;//thứ tự của frame trong 8 frame
     int status_;// sang trai hay sang phai
-    int last_status_;
 
     int on_ground_;
 
@@ -82,4 +87,6 @@ private:
     int current_health_;
 
     bool complete;
+
+    bool delay;
 };

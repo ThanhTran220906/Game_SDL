@@ -2,7 +2,7 @@
 #include "Level.h"
 
 Level::Level() {
-    pos = 0; // Khởi tạo vị trí chọn
+    pos = 0;
     file_map="";
     loading = false;
 
@@ -62,7 +62,6 @@ void Level::handleEvents(SDL_Event &event,MainObject &player) { // Truyền even
 void Level::update() {
     std::ifstream file("map//save.txt");
     if (!file) {
-        std::cerr << "Không tìm thấy file save.txt\n";
         return;
     }
     for(int i=0;i<TOTAL_LEVELS;i++){
@@ -98,7 +97,6 @@ void Level::SaveLevel()
     CompleteLevel[pos] =1;
     std::ofstream file("map//save.txt");
     if (!file) {
-        std::cerr << "Không thể mở file save.txt\n";
         return;
     }
     for(int i=0;i<TOTAL_LEVELS;i++){

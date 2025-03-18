@@ -56,9 +56,8 @@ struct Input
 {
     int left_;
     int right_;
-    int up_;
-    int down_;
     int jump_;
+    int run_;
 };
 
 

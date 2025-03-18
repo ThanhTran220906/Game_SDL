@@ -1,4 +1,3 @@
-
 #include "MainObject.h"
 #include <bits/stdc++.h>
 
@@ -11,11 +10,11 @@ MainObject::MainObject()
     width_frame_=0;
     height_frame_ =0;
     status_=0;
+
     input_type_.left_=0;
     input_type_.right_=0;
     input_type_.jump_=0;
-    input_type_.up_=0;
-    input_type_.down_=0;
+    input_type_.run_=0;
 
     on_ground_=0;
 
@@ -24,6 +23,8 @@ MainObject::MainObject()
     count_coins_=0;
 
     current_health_=PLAYER_MAX_HEALTH;
+
+    delay=false;
 }
 
 MainObject::~MainObject()
@@ -46,7 +47,7 @@ bool MainObject::LoadImg(string path,SDL_Renderer *screen)
 
 void MainObject::set_clips()
 {
-    if(width_frame_>0&&height_frame_>0)//hàm LoadImg chạy thành công
+    if(width_frame_>0 && height_frame_>0)//hàm LoadImg chạy thành công
     {
         for(int i=0;i<8;i++){
             frame_clip_[i].x=i*width_frame_;
@@ -60,19 +61,35 @@ void MainObject::set_clips()
 
 void MainObject::Show(SDL_Renderer *des)
 {
+
     if(status_==WALK_LEFT){
         LoadImg("img//player_left.png",des);
     }
-    else {
+    else if(status_==WALK_RIGHT) {
         LoadImg("img//player_right.png",des);
     }
-
-    if(input_type_.left_==1||input_type_.right_==1){
-        frame_++;
-        if(frame_>=8) frame_=0;
-
+    else if(status_==IDLE_RIGHT) {
+        LoadImg("img//idle_right.png",des);
     }
-    else frame_=0;
+    else if(status_==IDLE_LEFT) {
+        LoadImg("img//idle_left.png",des);
+    }
+    else if(status_==RUN_LEFT) {
+        LoadImg("img//p_run_left.png",des);
+    }
+    else if(status_==RUN_RIGHT) {
+        LoadImg("img//p_run_right.png",des);
+    }
+    if(delay) {
+        frame_++;
+        delay=!delay;
+    }
+    else delay=!delay;
+
+    frame_=frame_%8;
+    if(status_==WALK_LEFT || status_==WALK_RIGHT){
+        frame_=frame_%7;
+    }
 
     rect_.x=x_pos_-map_x_;
 
@@ -91,72 +108,71 @@ void MainObject::Show(SDL_Renderer *des)
 
 void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
 {
-    if(events.type==SDL_KEYDOWN){
-        switch(events.key.keysym.sym)
+    bool keyDown = (events.type == SDL_KEYDOWN);
+    bool keyUp = (events.type == SDL_KEYUP);
+
+    if (keyDown || keyUp)
+    {
+        bool pressed = keyDown ? 1 : 0;
+
+        switch (events.key.keysym.sym)
         {
-        case SDLK_d:
-            {
-                status_=WALK_RIGHT;
-                input_type_.right_=1;
-                input_type_.left_=0;
+        case SDLK_a:  // Sang trái
+            input_type_.left_ = pressed;
+            input_type_.right_ = 0;  // Đảm bảo không đi hai hướng cùng lúc
+            if (pressed) {
+                status_ = (input_type_.run_) ? RUN_LEFT : WALK_LEFT;
+            } else {
+                status_ = input_type_.run_ ? RUN_LEFT : IDLE_LEFT;
             }
             break;
-        case SDLK_a:
+
+        case SDLK_d:  // Sang phải
+            input_type_.right_ = pressed;
+            input_type_.left_ = 0;
+            if (pressed) {
+                status_ = (input_type_.run_) ? RUN_RIGHT : WALK_RIGHT;
+            } else {
+                status_ = input_type_.run_ ? RUN_RIGHT : IDLE_RIGHT;
+            }
+            break;
+
+        case SDLK_LSHIFT:  // Nhấn Shift để chạy
+            input_type_.run_ = pressed;
+            if (pressed) {
+                if (input_type_.left_) status_ = RUN_LEFT;
+                if (input_type_.right_) status_ = RUN_RIGHT;
+            } else {
+                if (input_type_.left_) status_ = WALK_LEFT;
+                else if (input_type_.right_) status_ = WALK_RIGHT;
+                else status_ = IDLE_RIGHT;
+            }
+            break;
+
+        case SDLK_w:  // Nhảy
+            input_type_.jump_ = pressed;
+            break;
+
+        case SDLK_SPACE:  // Bắn đạn
+            if (keyDown)
             {
-                status_=WALK_LEFT;
-                input_type_.left_=1;
-                input_type_.right_=0;
+                BulletObject *bullet_tmp= new BulletObject();
+                bullet_tmp->LoadImg("img//bullet.png", screen);
+                if (status_ == WALK_RIGHT || status_ == RUN_RIGHT) {
+                    bullet_tmp->CreateBullet(x_pos_ + 30, y_pos_ + 15, map_x_, map_y_);
+                    bullet_tmp->SetVal(30, 0);
+                }
+                if (status_ == WALK_LEFT || status_ == RUN_LEFT) {
+                    bullet_tmp->CreateBullet(x_pos_ + 10, y_pos_ + 15, map_x_, map_y_);
+                    bullet_tmp->SetVal(-30, 0);
+                }
+                bulletlist.push_back(bullet_tmp);
             }
             break;
         }
     }
-    else if(events.type==SDL_KEYUP){
-        switch(events.key.keysym.sym)
-        {
-        case SDLK_d:
-            {
-                input_type_.right_=0;
-                input_type_.left_=0;
-            }
-            break;
-        case SDLK_a:
-            {
-                input_type_.left_=0;
-                input_type_.right_=0;
-            }
-            break;
-        }
-    }
-    if(events.type==SDL_KEYDOWN){
-        if(events.key.keysym.sym==SDLK_w){
-            input_type_.jump_=1;
-        }
-    }
-    else if(events.type==SDL_KEYUP){
-        if(events.key.keysym.sym==SDLK_w){
-            input_type_.jump_=0;
-        }
-    }
-
-
-    if(events.type==SDL_KEYDOWN){//tao dan
-        if(events.key.keysym.sym==SDLK_SPACE){
-            BulletObject *bullet_tmp= new BulletObject();
-            bullet_tmp->LoadImg("img//bullet.png",screen);
-            if(status_==WALK_RIGHT) {
-                bullet_tmp->CreateBullet(x_pos_+30,y_pos_+15,map_x_,map_y_);
-                bullet_tmp->SetVal(30,0);
-            }
-
-            if(status_==WALK_LEFT) {
-                bullet_tmp->CreateBullet(x_pos_+10,y_pos_+15,map_x_,map_y_);
-                bullet_tmp->SetVal(-30,0);
-            }
-            bulletlist.push_back(bullet_tmp);
-        }
-    }
-
 }
+
 
 void MainObject::DoPlayer(Map &map_data)
 {
@@ -165,9 +181,9 @@ void MainObject::DoPlayer(Map &map_data)
 
     if(y_val_>=MAX_FALL_SPEED) y_val_=MAX_FALL_SPEED;
 
-    if(input_type_.left_==1) x_val_-=PLAYER_SPEED;
+    if(input_type_.left_==1) x_val_=(input_type_.run_==1) ? -PLAYER_SPEED*1.8:-PLAYER_SPEED ;
 
-    if(input_type_.right_==1) x_val_+=PLAYER_SPEED;
+    if(input_type_.right_==1) x_val_=(input_type_.run_==1) ? +PLAYER_SPEED*1.8:+PLAYER_SPEED ;
 
     if(input_type_.jump_==1) {
         if(on_ground_!=0){
@@ -192,39 +208,20 @@ void MainObject::CenterUntinyOnMap(Map &map_data)
 
 void MainObject::CheckToMap(Map &map_data)
 {
-    int x1=0;
-    int x2=0;
-
-    int y1=0;
-    int y2=0;
     //earn coin
-    x1 = (x_pos_ +x_val_-1) / TILE_SIZE;
-    x2 = (x_pos_ +width_frame_+x_val_+1) / TILE_SIZE;
+    int x1 = (x_pos_  + x_val_ -1) / TILE_SIZE;
+    int x2 = (x_pos_  + width_frame_ + x_val_ +1) / TILE_SIZE;
+    int y1 = (y_pos_ + y_val_ -1)/TILE_SIZE;
+    int y2 = (y_pos_ + height_frame_ + y_val_ +1) /TILE_SIZE;
+    int y3 = (y1 + y2)/2;
+    int x3 = (x1 + x2)/2;
 
-    y1=(y_pos_+y_val_-1)/TILE_SIZE;
-    y2=(y_pos_+height_frame_+y_val_+1)/TILE_SIZE;
-    int y3=(y1+y2)/2;
-    int x3=(x1+x2)/2;
-    earn_coin(map_data.tile[y1][x1]);
-    earn_coin(map_data.tile[y1][x2]);
-    earn_coin(map_data.tile[y1][x3]);
-    earn_coin(map_data.tile[y2][x1]);
-    earn_coin(map_data.tile[y2][x2]);
-    earn_coin(map_data.tile[y2][x3]);
-    earn_coin(map_data.tile[y3][x1]);
-    earn_coin(map_data.tile[y3][x2]);
-    earn_coin(map_data.tile[y3][x3]);
-
-    CompleteLevel(map_data.tile[y1][x1]);
-    CompleteLevel(map_data.tile[y1][x2]);
-    CompleteLevel(map_data.tile[y1][x3]);
-    CompleteLevel(map_data.tile[y2][x1]);
-    CompleteLevel(map_data.tile[y2][x2]);
-    CompleteLevel(map_data.tile[y2][x3]);
-    CompleteLevel(map_data.tile[y3][x1]);
-    CompleteLevel(map_data.tile[y3][x2]);
-    CompleteLevel(map_data.tile[y3][x3]);
-
+    for (int y : {y1, y2, y3})
+        for (int x : {x1, x2, x3})
+        {
+            earn_coin(map_data.tile[y][x]);
+            CompleteLevel(map_data.tile[y][x]);
+        }
     //thêm cơ chế đổi đạn vào đây
 
     //check horizontal
@@ -236,7 +233,6 @@ void MainObject::CheckToMap(Map &map_data)
     y2=(y_pos_+height_min-1)/TILE_SIZE;
 
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
-
         if(x_val_>0){// right
             if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 x_pos_ = x2 * TILE_SIZE;
@@ -278,7 +274,6 @@ void MainObject::CheckToMap(Map &map_data)
         }
     }
 
-
     x_pos_+=x_val_;
     y_pos_+=y_val_;
 
@@ -299,7 +294,7 @@ void MainObject::earn_coin(int &val)
 void MainObject::RenderHealthBar(SDL_Renderer* renderer) {
     int bar_width = 50;  // Độ dài thanh máu
     int bar_height = 5;  // Độ cao thanh máu
-    int x = rect_.x;  // Vị trí ngang theo tọa độ của Threat
+    int x = rect_.x  ;  // Vị trí ngang theo tọa độ của Threat
     int y = rect_.y - 10;  // Đặt thanh máu ngay trên đầu Threat
 
     // Viền đen của thanh máu
@@ -321,16 +316,13 @@ void MainObject::CompleteLevel(int &val)
     }
 }
 
-
-
-
-
-
-
-
-
-
-
+void MainObject::Clear()
+{
+    input_type_.left_=0;
+    input_type_.right_=0;
+    input_type_.jump_=0;
+    input_type_.run_=0;
+}
 
 
 
