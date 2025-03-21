@@ -15,7 +15,7 @@ bool InitData() {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-    g_window = SDL_CreateWindow("SDL_GAME_DEMO",
+    g_window = SDL_CreateWindow("RUN TO SURVICE",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         SCREEN_WIDTH, SCREEN_HEIGHT,
         SDL_WINDOW_SHOWN);
