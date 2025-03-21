@@ -18,7 +18,7 @@ TextObject::~TextObject()
 
 bool TextObject::loadFromRenderedText(SDL_Renderer* screen)
 {
-    Free(); // Giải phóng texture cũ trước khi tạo mới
+    //Free(); // Giải phóng texture cũ trước khi tạo mới
 
     TTF_Font* gFont = TTF_OpenFont("font//OpenSans-Regular.ttf", size_);
     if (gFont == NULL) {
