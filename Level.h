@@ -11,6 +11,7 @@
 class Level {
 private:
 	int pos ;
+	int last_pos ;
 	int n = 6;
 	TextObject textBoxes[6];
 	string file_map;

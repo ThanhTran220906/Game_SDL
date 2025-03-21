@@ -43,6 +43,9 @@ bool InitData() {
     g_sound_bullet = Mix_LoadWAV("mixer//shot.wav");
     g_sound_explode = Mix_LoadWAV("mixer//explode.wav");
     g_sound_jump = Mix_LoadWAV("mixer//jump.wav");
+    g_sound_menu = Mix_LoadWAV("mixer//menu.wav");
+    g_sound_coin = Mix_LoadWAV("mixer//coin.wav");
+    g_sound_hurt = Mix_LoadWAV("mixer//hurt.wav");
 
     return success;
 }
@@ -57,6 +60,14 @@ void close() {
     SDL_DestroyRenderer(g_screen);
     SDL_DestroyWindow(g_window);
 
+    Mix_FreeChunk(g_sound_bullet);
+    Mix_FreeChunk(g_sound_explode);
+    Mix_FreeChunk(g_sound_jump);
+    Mix_FreeChunk(g_sound_coin);
+    Mix_FreeChunk(g_sound_menu);
+    Mix_FreeChunk(g_sound_hurt);
+
+    Mix_CloseAudio();
     IMG_Quit();
     SDL_Quit();
     TTF_Quit();
@@ -220,7 +231,7 @@ int main(int argc, char* argv[]) {
                     tmp_explode->CreateExplode(grenadelist[i]->Get_x_pos()-20,grenadelist[i]->Get_y_pos()-30,map_data.start_x_,map_data.start_y_);
                     tmp_explode->LoadImg("img//explode.png",g_screen);
                     explodelist.push_back(tmp_explode);
-                    int ret = Mix_PlayChannel(-1, g_sound_explode , 0); // tieng no bom
+                    if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_explode , 0); // tieng no bom
                     delete grenadelist[i]; grenadelist[i]=nullptr;
                     grenadelist.erase(grenadelist.begin()+i); continue;
                 }

@@ -17,6 +17,9 @@ static SDL_Event g_event;
 extern Mix_Chunk*  g_sound_bullet;
 extern Mix_Chunk*  g_sound_explode;
 extern Mix_Chunk*  g_sound_jump;
+extern Mix_Chunk*  g_sound_coin;
+extern Mix_Chunk*  g_sound_menu;
+extern Mix_Chunk*  g_sound_hurt;
 //
 //game
 extern bool gameRunning;
@@ -25,6 +28,8 @@ extern bool LevelChoose;
 extern bool Pause;
 extern bool GameOver;
 extern bool is_quit;
+
+extern bool SoundEnable;
 
 //
 

@@ -230,6 +230,7 @@ void ThreatObject::Run_attack(MainObject &player, Map map_data)
            || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
            )
         {
+            if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_hurt , 0);
             int health_player=player.GetHealth();
             health_player--;
             player.SetHealth(health_player);
@@ -256,6 +257,7 @@ void ThreatObject::Attack_player(MainObject &player)
            || (r.x+r.w/8>rect_.x && r.x+r.w/8<rect_.x+width_frame_&& r.y+r.h/2 >rect_.y  &&  r.y+r.h/2 <rect_.y+height_frame_)
            )
         {
+            if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_hurt , 0);
             int health_player=player.GetHealth();
             health_player--;
             player.SetHealth(health_player);

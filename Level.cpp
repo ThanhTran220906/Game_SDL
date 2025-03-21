@@ -3,6 +3,7 @@
 
 Level::Level() {
     pos = 0;
+    last_pos = 0;
     file_map="";
     loading = false;
 
@@ -81,6 +82,10 @@ void Level::handleEvents(SDL_Event &event,MainObject &player,int x,int y) { // T
 }
 
 void Level::update() {
+        if(pos!=last_pos){
+        if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_menu , 0);
+        last_pos=pos;
+    }
     std::ifstream file("map//save.txt");
     if (!file) {
         return;

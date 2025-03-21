@@ -13,7 +13,7 @@ titleScreen::titleScreen() {
     }
 
     textBoxes[0].SetText("Play");
-    textBoxes[1].SetText("Options");
+    textBoxes[1].SetText("Sound: On");
     textBoxes[2].SetText("Quit");
 }
 
@@ -39,7 +39,7 @@ void titleScreen::handleEvents(SDL_Event &event,int x,int y) { // Truyền event
                     break;
                 case SDLK_RETURN:
                     if (pos == 0) { Title = false; LevelChoose = true; }
-                    if (pos == 1) std::cout << "Options" << std::endl;
+                    if (pos == 1) SoundEnable=!SoundEnable;
                     if (pos == 2) { Title = false; is_quit = true; }
                     break;
                 default:
@@ -49,7 +49,7 @@ void titleScreen::handleEvents(SDL_Event &event,int x,int y) { // Truyền event
         case SDL_MOUSEBUTTONDOWN:
             if(event.button.button == SDL_BUTTON_LEFT) {
                 if (pos == 0) { Title = false; LevelChoose = true; }
-                if (pos == 1) std::cout << "Options" << std::endl;
+                if (pos == 1) SoundEnable=!SoundEnable;
                 if (pos == 2) { Title = false; is_quit = true; }
             }
             break;
@@ -57,6 +57,10 @@ void titleScreen::handleEvents(SDL_Event &event,int x,int y) { // Truyền event
 }
 
 void titleScreen::update() {
+    if(pos!=last_pos){
+        if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_menu , 0);
+        last_pos=pos;
+    }
     for (int i = 0; i < n; i++) {
         textBoxes[i].setColor(TextObject::WHITE_TEXT);
         textBoxes[i].SetSize(24);
@@ -74,7 +78,8 @@ void titleScreen::update() {
 void titleScreen::render(SDL_Renderer* des) {
     SDL_SetRenderDrawColor(des, 20, 20, 20, 255);
     SDL_RenderClear(des);
-
+    if(SoundEnable)     textBoxes[1].SetText("Sound: On");
+    else     textBoxes[1].SetText("Sound: Off");
     for (int i = 0; i < n; i++) {
         textBoxes[i].loadFromRenderedText(des);
         textBoxes[i].RenderText(des);
@@ -94,7 +99,7 @@ pauseMenu::pauseMenu() {
     }
 
     textBoxes[0].SetText("Continue");
-    textBoxes[1].SetText("Options");
+    textBoxes[1].SetText("Sound: On");
     textBoxes[2].SetText("Title Screen");
     textBoxes[3].SetText("Quit");
 }
@@ -121,7 +126,7 @@ void pauseMenu::handleEvents(SDL_Event& event,int x,int y) {
                     break;
                 case SDLK_RETURN:
                     if (pos == 0) { Pause = false; gameRunning = true; }
-                    if (pos == 1) std::cout << "Options" << std::endl;
+                    if (pos == 1) SoundEnable=!SoundEnable;
                     if (pos == 2) { Pause=false ; Title = true; loading = true; }
                     if (pos == 3) { Pause = false; is_quit = true; }
                     break;
@@ -132,7 +137,7 @@ void pauseMenu::handleEvents(SDL_Event& event,int x,int y) {
         case SDL_MOUSEBUTTONDOWN:
             if(event.button.button == SDL_BUTTON_LEFT) {
                 if (pos == 0) { Pause = false; gameRunning = true; }
-                if (pos == 1) std::cout << "Options" << std::endl;
+                if (pos == 1) SoundEnable=!SoundEnable;
                 if (pos == 2) { Pause=false ; Title = true; loading = true; }
                 if (pos == 3) { Pause = false; is_quit = true; }
             }
@@ -141,6 +146,10 @@ void pauseMenu::handleEvents(SDL_Event& event,int x,int y) {
 }
 
 void pauseMenu::update() {
+    if(pos!=last_pos){
+        if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_menu , 0);
+        last_pos=pos;
+    }
     for (int i = 0; i < n; i++) {
         textBoxes[i].setColor(TextObject::WHITE_TEXT);
         textBoxes[i].SetSize(24);
@@ -164,6 +173,8 @@ void pauseMenu::render(SDL_Renderer* des) {
         textBoxes[i].loadFromRenderedText(des);
         textBoxes[i].RenderText(des);
     }
+    if(SoundEnable)     textBoxes[1].SetText("Sound: On");
+    else     textBoxes[1].SetText("Sound: Off");
     SDL_RenderPresent(des);
 }
 
@@ -223,6 +234,10 @@ void GameOverMenu::handleEvents(SDL_Event& event, MainObject &player,int x,int y
 }
 
 void GameOverMenu::update() {
+    if(pos!=last_pos){
+        int ret = Mix_PlayChannel(-1, g_sound_menu , 0);
+        last_pos=pos;
+    }
     for (int i = 0; i < n; i++) {
         textBoxes[i].setColor(TextObject::WHITE_TEXT);
         textBoxes[i].SetSize(24);

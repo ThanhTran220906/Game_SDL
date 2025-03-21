@@ -220,7 +220,7 @@ void MainObject::HandleInputAction(SDL_Event events)
             Clear();
             input_type_.shot_=1;
             frame_=0;
-            int ret = Mix_PlayChannel(-1, g_sound_bullet , 0);
+            if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_bullet , 0);
             if (status_ == WALK_RIGHT || status_ == RUN_RIGHT || status_ == IDLE_RIGHT) {
                 status_=SHOT_RIGHT;
             }
@@ -258,7 +258,7 @@ void MainObject::DoPlayer(Map &map_data)
 
     if(input_type_.jump_==1) {
         if(on_ground_!=0){
-            int ret = Mix_PlayChannel(-1, g_sound_jump , 0);
+            if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_jump , 0);
             y_val_=-JUMP_VAL;
             on_ground_--;
         }
@@ -355,6 +355,7 @@ void MainObject::CheckToMap(Map &map_data)
 void MainObject::earn_coin(int &val)
 {
     if(val==COIN_TILE){
+        if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_coin , 0);
         count_coins_++;
         val=0;
     }
