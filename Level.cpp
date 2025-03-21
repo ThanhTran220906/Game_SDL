@@ -28,7 +28,7 @@ Level::~Level()
 
 void Level::handleEvents(SDL_Event &event,MainObject &player,int x,int y) { // Truyền event từ vòng lặp chính
     for (int i = 0; i < n; i++) {
-        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+        if(x>400-5 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100-5 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+60) pos=i;
     }
 
     switch (event.type) {

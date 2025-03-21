@@ -115,9 +115,11 @@ int main(int argc, char* argv[]) {
             int x=0,y=0;
             SDL_GetMouseState(&x, &y);
             if (Title) {
+                SDL_Delay(40);
                 title.handleEvents(g_event,x,y);
             }
             else if (Pause) {
+                SDL_Delay(40);
                 pause.handleEvents(g_event,x,y);
                 if(pause.GetBoolLoading()){
                     ClearVector(bulletlist);
@@ -128,6 +130,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             else if (LevelChoose){
+                SDL_Delay(40);
                 level.handleEvents(g_event, p_player,x,y);
                 if(level.GetBoolLoading()){
                     file_map=level.GetFilemap();
@@ -142,6 +145,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             else if(GameOver){
+                SDL_Delay(40);
                 game_over.handleEvents(g_event,p_player,x,y);
                 if(game_over.GetBoolLoading()){
                     game_map.LoadMap(file_map);

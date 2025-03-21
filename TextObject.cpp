@@ -20,7 +20,7 @@ bool TextObject::loadFromRenderedText(SDL_Renderer* screen)
 {
     Free(); // Giải phóng texture cũ trước khi tạo mới
 
-    TTF_Font* gFont = TTF_OpenFont(font_.c_str(), size_);
+    TTF_Font* gFont = TTF_OpenFont("font//OpenSans-Regular.ttf", size_);
     if (gFont == NULL) {
         printf("Khong the tai font! Loi: %s\n", TTF_GetError());
         return false;

@@ -21,7 +21,7 @@ titleScreen::~titleScreen() {}
 
 void titleScreen::handleEvents(SDL_Event &event,int x,int y) { // Truyền event từ vòng lặp chính
     for (int i = 0; i < n; i++) {
-        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+        if(x>400-5 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100-5 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+60) pos=i;
     }
 
     switch (event.type) {
@@ -108,7 +108,7 @@ pauseMenu::~pauseMenu() {}
 
 void pauseMenu::handleEvents(SDL_Event& event,int x,int y) {
     for (int i = 0; i < n; i++) {
-        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+        if(x>400-5 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100-5 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+60) pos=i;
     }
 
     switch (event.type) {
@@ -197,8 +197,8 @@ GameOverMenu::GameOverMenu() {
 GameOverMenu::~GameOverMenu() {}
 
 void GameOverMenu::handleEvents(SDL_Event& event, MainObject &player,int x,int y) { // Truyền event từ vòng lặp chính
-        for (int i = 0; i < n; i++) {
-        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+    for (int i = 0; i < n; i++) {
+        if(x>400-5 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100-5 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+60) pos=i;
     }
 
     switch (event.type) {
