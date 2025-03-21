@@ -145,19 +145,24 @@ void ThreatObject::AutoMoveThreat(Map &map_data)
     else if(status_==RUN_RIGHT||status_==RUN_ATTACK_RIGHT||status_==ATTACK_RIGHT) status_=WALK_RIGHT;
     x_val_ = (status_ == WALK_LEFT) ? -THREAT_VAL : THREAT_VAL;
 
+    int height_min =min(height_frame_,TILE_SIZE);
     int x1 = (x_pos_ + x_val_) / TILE_SIZE;
     int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
-    int y1 = y_pos_ / TILE_SIZE;
-    int y2 = (y_pos_ + height_frame_ - 1) / TILE_SIZE;
+    int y1=(y_pos_)/TILE_SIZE;
+    int y2=(y_pos_+height_min-1)/TILE_SIZE;
 
-    if (x1 >= 0 && x2 < MAX_MAP_X && y1 >= 0 && y2 < MAX_MAP_Y)
-    {
-        // Kiểm tra va chạm với vật cản
-        if ((x_val_ > 0 && (map_data.tile[y1][x2] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE)) ||
-            (x_val_ < 0 && (map_data.tile[y1][x1] != BLANK_TILE || map_data.tile[y2][x1] != BLANK_TILE)))
-        {
-            status_ = (status_ == WALK_LEFT) ? WALK_RIGHT : WALK_LEFT;
-            x_val_ = 0; // Dừng di chuyển ngay lập tức
+    if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+        if(x_val_>0){// right
+            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE||map_data.tile[y2+1][x2]==BLANK_TILE){
+                status_=WALK_LEFT;
+                x_val_=0;
+            }
+        }
+        if(x_val_<0){
+            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE||map_data.tile[y2+1][x1]==BLANK_TILE){
+                status_=WALK_RIGHT;
+                x_val_=0;
+            }
         }
     }
 
@@ -172,17 +177,22 @@ void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
 
     status_ = (x_val_ < 0) ? RUN_LEFT : RUN_RIGHT;
 
+    int height_min =min(height_frame_,TILE_SIZE);
     int x1 = (x_pos_ + x_val_) / TILE_SIZE;
     int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
-    int y1 = y_pos_ / TILE_SIZE;
-    int y2 = (y_pos_ + height_frame_ - 1) / TILE_SIZE;
+    int y1=(y_pos_)/TILE_SIZE;
+    int y2=(y_pos_+height_min-1)/TILE_SIZE;
 
-    if (x1 >= 0 && x2 < MAX_MAP_X && y1 >= 0 && y2 < MAX_MAP_Y)
-    {
-        if ((x_val_ > 0 && (map_data.tile[y1][x2] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE)) ||
-            (x_val_ < 0 && (map_data.tile[y1][x1] != BLANK_TILE || map_data.tile[y2][x1] != BLANK_TILE)))
-        {
-            x_val_ = 0; // Nếu gặp vật cản, dừng lại
+    if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+        if(x_val_>0){// right
+            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE||map_data.tile[y2+1][x2]==BLANK_TILE){
+                x_val_=0;
+            }
+        }
+        if(x_val_<0){
+            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE||map_data.tile[y2+1][x1]==BLANK_TILE){
+                x_val_=0;
+            }
         }
     }
 
@@ -191,19 +201,25 @@ void ThreatObject::MovetoPlayer(MainObject player, Map map_data)
 
 void ThreatObject::Run_attack(MainObject &player, Map map_data)
 {
+    int height_min =min(height_frame_,TILE_SIZE);
     int x1 = (x_pos_ + x_val_) / TILE_SIZE;
     int x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
-    int y1 = y_pos_ / TILE_SIZE;
-    int y2 = (y_pos_ + height_frame_ - 1) / TILE_SIZE;
+    int y1=(y_pos_)/TILE_SIZE;
+    int y2=(y_pos_+height_min-1)/TILE_SIZE;
 
-    if (x1 >= 0 && x2 < MAX_MAP_X && y1 >= 0 && y2 < MAX_MAP_Y)
-    {
-        if ((x_val_ > 0 && (map_data.tile[y1][x2] != BLANK_TILE || map_data.tile[y2][x2] != BLANK_TILE)) ||
-            (x_val_ < 0 && (map_data.tile[y1][x1] != BLANK_TILE || map_data.tile[y2][x1] != BLANK_TILE)))
-        {
-            x_val_ = 0;
+    if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
+        if(x_val_>0){// right
+            if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE||map_data.tile[y2+1][x2]==BLANK_TILE){
+                x_val_=0;
+            }
+        }
+        if(x_val_<0){
+            if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE||map_data.tile[y2+1][x1]==BLANK_TILE){
+                x_val_=0;
+            }
         }
     }
+
     if(frame_==6 && delay){
         SDL_Rect r=player.GetRect();
         if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)

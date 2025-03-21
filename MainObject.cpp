@@ -215,8 +215,8 @@ void MainObject::HandleInputAction(SDL_Event events)
     else input_type_.run_=0;
 
 
-    if(events.type == SDL_KEYDOWN ){
-        if(on_ground_==2 && events.key.keysym.sym == SDLK_SPACE){
+    if(events.type == SDL_MOUSEBUTTONDOWN ){
+        if(on_ground_==2 && events.button.button == SDL_BUTTON_LEFT){
             Clear();
             input_type_.shot_=1;
             frame_=0;
@@ -229,8 +229,8 @@ void MainObject::HandleInputAction(SDL_Event events)
             }
         }
     }
-    if(events.type == SDL_KEYDOWN ){
-        if(on_ground_==2 && events.key.keysym.sym == SDLK_k){
+    if(events.type == SDL_MOUSEBUTTONDOWN ){
+        if(on_ground_==2 && events.button.button == SDL_BUTTON_RIGHT){
             Clear();
             input_type_.grenade_=1;
             frame_=0;
