@@ -19,7 +19,11 @@ titleScreen::titleScreen() {
 
 titleScreen::~titleScreen() {}
 
-void titleScreen::handleEvents(SDL_Event &event) { // Truyền event từ vòng lặp chính
+void titleScreen::handleEvents(SDL_Event &event,int x,int y) { // Truyền event từ vòng lặp chính
+    for (int i = 0; i < n; i++) {
+        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+    }
+
     switch (event.type) {
         case SDL_QUIT:
             is_quit = true;
@@ -40,6 +44,13 @@ void titleScreen::handleEvents(SDL_Event &event) { // Truyền event từ vòng 
                     break;
                 default:
                     break;
+            }
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if(event.button.button == SDL_BUTTON_LEFT) {
+                if (pos == 0) { Title = false; LevelChoose = true; }
+                if (pos == 1) std::cout << "Options" << std::endl;
+                if (pos == 2) { Title = false; is_quit = true; }
             }
             break;
     }
@@ -90,7 +101,11 @@ pauseMenu::pauseMenu() {
 
 pauseMenu::~pauseMenu() {}
 
-void pauseMenu::handleEvents(SDL_Event& event) {
+void pauseMenu::handleEvents(SDL_Event& event,int x,int y) {
+    for (int i = 0; i < n; i++) {
+        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+    }
+
     switch (event.type) {
         case SDL_QUIT:
             is_quit = true;
@@ -112,6 +127,14 @@ void pauseMenu::handleEvents(SDL_Event& event) {
                     break;
                 default:
                     break;
+            }
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if(event.button.button == SDL_BUTTON_LEFT) {
+                if (pos == 0) { Pause = false; gameRunning = true; }
+                if (pos == 1) std::cout << "Options" << std::endl;
+                if (pos == 2) { Pause=false ; Title = true; loading = true; }
+                if (pos == 3) { Pause = false; is_quit = true; }
             }
             break;
     }
@@ -162,7 +185,11 @@ GameOverMenu::GameOverMenu() {
 
 GameOverMenu::~GameOverMenu() {}
 
-void GameOverMenu::handleEvents(SDL_Event& event, MainObject &player) { // Truyền event từ vòng lặp chính
+void GameOverMenu::handleEvents(SDL_Event& event, MainObject &player,int x,int y) { // Truyền event từ vòng lặp chính
+        for (int i = 0; i < n; i++) {
+        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+    }
+
     switch (event.type) {
         case SDL_QUIT:
             is_quit = true;
@@ -177,12 +204,19 @@ void GameOverMenu::handleEvents(SDL_Event& event, MainObject &player) { // Truy�
                     pos = (pos + 1) % n; // Di chuyển xuống
                     break;
                 case SDLK_RETURN:
-                    if (pos == 0) { GameOver = false; gameRunning = true; player.SetHealth(PLAYER_MAX_HEALTH); player.SetPos(SCREEN_WIDTH/2,0); loading = true; }
+                    if (pos == 0) { GameOver = false; gameRunning = true; player.SetHealth(PLAYER_MAX_HEALTH); player.SetPos(SCREEN_WIDTH/2,0); player.Set_Coin(0); loading = true; }
                     if (pos == 1) { GameOver = false; Title =true; }
                     if (pos == 2) { GameOver = false; is_quit = true; }
                     break;
                 default:
                     break;
+            }
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if(event.button.button == SDL_BUTTON_LEFT) {
+                if (pos == 0) { GameOver = false; gameRunning = true; player.SetHealth(PLAYER_MAX_HEALTH); player.SetPos(SCREEN_WIDTH/2,0); player.Set_Coin(0); loading = true; }
+                if (pos == 1) { GameOver = false; Title =true; }
+                if (pos == 2) { GameOver = false; is_quit = true; }
             }
             break;
     }

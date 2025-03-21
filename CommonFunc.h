@@ -9,11 +9,15 @@
 
 
 using namespace std;
-
+//
 static SDL_Window *g_window =NULL;
 static SDL_Renderer *g_screen =NULL;
 static SDL_Event g_event;
-
+//
+extern Mix_Chunk*  g_sound_bullet;
+extern Mix_Chunk*  g_sound_explode;
+extern Mix_Chunk*  g_sound_jump;
+//
 //game
 extern bool gameRunning;
 extern bool Title;
@@ -58,6 +62,8 @@ struct Input
     int right_;
     int jump_;
     int run_;
+    int shot_;
+    int grenade_;
 };
 
 

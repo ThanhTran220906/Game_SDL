@@ -26,6 +26,17 @@ void GameMap::LoadMap(string name)
             }
         }
     }
+    //Spawn Threat
+    for(int i=0;i<MAX_MAP_Y;i++){
+        for(int j=0;j<MAX_MAP_X;j++){
+            if(game_map_.tile[i][j]==20){
+                ThreatObject *thread_tmp =new ThreatObject;
+                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE-27);
+                game_map_.tile[i][j]=0;
+                threatlist.push_back(thread_tmp);
+            }
+        }
+    }      //
 
     game_map_.max_x_=(game_map_.max_x_+1)*TILE_SIZE;
     game_map_.max_y_=(game_map_.max_y_+1)*TILE_SIZE;
@@ -50,7 +61,6 @@ void GameMap::LoadTiles(SDL_Renderer* screen)
             continue;
         }
         fclose(fp);
-
         tile_mat_[i].LoadImg(file_img,screen);
 
     }
@@ -85,20 +95,6 @@ void GameMap::DrawMap(SDL_Renderer *screen)
     }
 }
 
-void GameMap::SpawnThreat()
-{
-    //Spawn Threat
-    for(int i=0;i<MAX_MAP_Y;i++){
-        for(int j=0;j<MAX_MAP_X;j++){
-            if(game_map_.tile[i][j]==20){
-                ThreatObject *thread_tmp =new ThreatObject;
-                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE-27);
-                game_map_.tile[i][j]=0;
-                threatlist.push_back(thread_tmp);
-            }
-        }
-    }      //
-}
 
 
 

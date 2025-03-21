@@ -36,6 +36,14 @@ bool InitData() {
     if (TTF_Init() == -1) {
         success = false;
     }
+    // Mở audio với tần số 22050 Hz, định dạng mặc định, 2 kênh (stereo), buffer 4096
+    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+        return false;
+    }
+    g_sound_bullet = Mix_LoadWAV("mixer//shot.wav");
+    g_sound_explode = Mix_LoadWAV("mixer//explode.wav");
+    g_sound_jump = Mix_LoadWAV("mixer//jump.wav");
+
     return success;
 }
 
@@ -58,7 +66,6 @@ template <typename T>
 void ClearVector(vector<T*>& v) {
     for (int i = v.size() - 1; i >= 0; i--) {
         delete v[i];
-        v[i] = nullptr;
         v.erase(v.begin() + i);
     }
 }
@@ -82,8 +89,10 @@ int main(int argc, char* argv[]) {
     p_player.LoadImg("img//player_right.png", g_screen);
     p_player.set_clips();
     vector<BulletObject*> bulletlist ;
+    vector<GrenadeObject*> grenadelist ;
+    vector<Explode*> explodelist ;
 
-
+    TextObject Coin; Coin.SetXY(20,20); Coin.SetSize(20);
     //game loop
     while (!is_quit) {
         while (SDL_PollEvent(&g_event)) {
@@ -92,48 +101,46 @@ int main(int argc, char* argv[]) {
                 is_quit = true;
             }
             //xu li game
-            if (g_event.type == SDL_KEYDOWN) {
-                if (Title) {
-                    title.handleEvents(g_event);
+            int x=0,y=0;
+            SDL_GetMouseState(&x, &y);
+            if (Title) {
+                title.handleEvents(g_event,x,y);
+            }
+            else if (Pause) {
+                pause.handleEvents(g_event,x,y);
+                if(pause.GetBoolLoading()){
+                    ClearVector(bulletlist);
+                    p_player.Set_Bulletlist(bulletlist);
+                    ClearVector(threatlist);
+                    game_map.SetThreatList(threatlist);
+                    pause.SetBoolLoading(false);
                 }
-                else if (Pause) {
-                    pause.handleEvents(g_event);
-                    if(pause.GetBoolLoading()){
-                        ClearVector(bulletlist);
-                        p_player.Set_Bulletlist(bulletlist);
-                        ClearVector(threatlist);
-                        game_map.SetThreatList(threatlist);
-                        pause.SetBoolLoading(false);
+            }
+            else if (LevelChoose){
+                level.handleEvents(g_event, p_player,x,y);
+                if(level.GetBoolLoading()){
+                    file_map=level.GetFilemap();
+                    game_map.LoadMap(file_map);
+                    game_map.LoadTiles(g_screen);
+                    threatlist = game_map.GetThreatList();
+                    for (int i=threatlist.size()-1;i>=0;--i) {
+                        threatlist[i]->LoadImg("img//threat_right.png", g_screen);
+                        threatlist[i]->set_clips();
                     }
+                    level.SetBoolLoading(false);
                 }
-                else if (LevelChoose){
-                    level.handleEvents(g_event, p_player);
-                    if(level.GetBoolLoading()){
-                        file_map=level.GetFilemap();
-                        game_map.LoadMap(file_map);
-                        game_map.LoadTiles(g_screen);
-                        game_map.SpawnThreat();
-                        threatlist = game_map.GetThreatList();
-                        for (int i=threatlist.size()-1;i>=0;--i) {
-                            threatlist[i]->LoadImg("img//threat_right.png", g_screen);
-                            threatlist[i]->set_clips();
-                        }
-                        level.SetBoolLoading(false);
+            }
+            else if(GameOver){
+                game_over.handleEvents(g_event,p_player,x,y);
+                if(game_over.GetBoolLoading()){
+                    game_map.LoadMap(file_map);
+                    game_map.LoadTiles(g_screen);
+                    threatlist = game_map.GetThreatList();
+                    for (int i=threatlist.size()-1;i>=0;--i) {
+                        threatlist[i]->LoadImg("img//threat_right.png", g_screen);
+                        threatlist[i]->set_clips();
                     }
-                }
-                else if(GameOver){
-                    game_over.handleEvents(g_event,p_player);
-                    if(game_over.GetBoolLoading()){
-                        game_map.LoadMap(file_map);
-                        game_map.LoadTiles(g_screen);
-                        game_map.SpawnThreat();
-                        threatlist = game_map.GetThreatList();
-                        for (int i=threatlist.size()-1;i>=0;--i) {
-                            threatlist[i]->LoadImg("img//threat_right.png", g_screen);
-                            threatlist[i]->set_clips();
-                        }
-                        game_over.SetBoolLoading(false);
-                    }
+                    game_over.SetBoolLoading(false);
                 }
             }
             if(gameRunning){
@@ -142,7 +149,7 @@ int main(int argc, char* argv[]) {
                     Pause =true;
                     p_player.Clear();
                 }
-                p_player.HandleInputAction(g_event,g_screen);
+                p_player.HandleInputAction(g_event);
             }
         }
         if (Title) {
@@ -178,36 +185,63 @@ int main(int argc, char* argv[]) {
 
             game_map.SetMap(map_data);
             game_map.DrawMap(g_screen);
-            //lay bulletlist u player
+
+            //lay bulletlist tu player
             bulletlist = p_player.Get_Bulletlist();
+            grenadelist = p_player.Get_Grenadelist();
             //xu li threatlist
             for(int i=threatlist.size()-1;i>=0;--i){
                 threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
-                threatlist[i]->Attack_player(p_player);
-                threatlist[i]->MovetoPlayer(p_player, map_data);
-                threatlist[i]->AutoMoveThreat(map_data);
-                threatlist[i]->Bullet_to_threat(bulletlist);
-                threatlist[i]->Show(g_screen);
+                threatlist[i]->Do_Threat(map_data,p_player);
+                threatlist[i]->Bullet_to_threat(bulletlist, explodelist);
                 if(threatlist[i]->Get_health()<=0){
-                    delete threatlist[i];
-                    threatlist[i]=nullptr;
-                    threatlist.erase(threatlist.begin()+i);
+                    delete threatlist[i]; threatlist[i]=nullptr;
+                    threatlist.erase(threatlist.begin()+i); continue;
                 }
+                threatlist[i]->Show(g_screen);
+
             }
             //xu li dan
             for(int i=bulletlist.size()-1;i>=0;--i){
                 bulletlist[i]->CheckToMap(map_data);
                 if(bulletlist[i]->Get_is_move()==false) {
-                    delete bulletlist[i];
-                    bulletlist[i]=nullptr;
-                    bulletlist.erase(bulletlist.begin()+i);
-                    continue;
+                    delete bulletlist[i]; bulletlist[i]=nullptr;
+                    bulletlist.erase(bulletlist.begin()+i); continue;
                 }
                 bulletlist[i]->HandleBulletMove(map_data.start_x_,map_data.start_y_);
                 bulletlist[i]->Render(g_screen,NULL);
 
             }
+
+            for(int i=grenadelist.size()-1;i>=0;--i){
+                grenadelist[i]->CheckToMap(map_data);
+                if(grenadelist[i]->Get_is_move()==false) {
+                    Explode *tmp_explode = new Explode();
+                    tmp_explode->CreateExplode(grenadelist[i]->Get_x_pos()-20,grenadelist[i]->Get_y_pos()-30,map_data.start_x_,map_data.start_y_);
+                    tmp_explode->LoadImg("img//explode.png",g_screen);
+                    explodelist.push_back(tmp_explode);
+                    int ret = Mix_PlayChannel(-1, g_sound_explode , 0); // tieng no bom
+                    delete grenadelist[i]; grenadelist[i]=nullptr;
+                    grenadelist.erase(grenadelist.begin()+i); continue;
+                }
+                grenadelist[i]->HandleGrenadeMove(map_data.start_x_,map_data.start_y_);
+                grenadelist[i]->Render(g_screen,NULL);
+            }
+
+            for(int i=explodelist.size()-1;i>=0;--i){
+                explodelist[i]->Show(g_screen,map_data.start_x_,map_data.start_y_);
+                if(explodelist[i]->Get_delete()){
+                    delete explodelist[i]; explodelist[i]=nullptr;
+                    explodelist.erase(explodelist.begin()+i); continue;
+                }
+            }
+
+            p_player.Set_Grenadelist(grenadelist);
             p_player.Set_Bulletlist(bulletlist);//cap nhat lai bulletlist cua player
+            //coin
+            Coin.SetText("Coin: "+to_string(p_player.Get_Coin()));
+            Coin.loadFromRenderedText(g_screen);
+            Coin.RenderText(g_screen);
 
             SDL_RenderPresent(g_screen); //in ra man hinh
             //xu li fps
@@ -219,10 +253,9 @@ int main(int argc, char* argv[]) {
             if (p_player.GetHealth() <= 0) {
                 GameOver = true;
                 gameRunning = false;
-                ClearVector(bulletlist);
-                p_player.Set_Bulletlist(bulletlist);
-                ClearVector(threatlist);
-                game_map.SetThreatList(threatlist);
+                ClearVector(bulletlist); p_player.Set_Bulletlist(bulletlist);
+                ClearVector(grenadelist); p_player.Set_Grenadelist(grenadelist);
+                ClearVector(threatlist); game_map.SetThreatList(threatlist);
                 p_player.Clear();
             }
             //winning
@@ -230,19 +263,17 @@ int main(int argc, char* argv[]) {
                 LevelChoose = true;
                 gameRunning = false;
                 level.SaveLevel();
-                ClearVector(bulletlist);
-                p_player.Set_Bulletlist(bulletlist);
-                ClearVector(threatlist);
-                game_map.SetThreatList(threatlist);
+                ClearVector(bulletlist); p_player.Set_Bulletlist(bulletlist);
+                ClearVector(grenadelist); p_player.Set_Grenadelist(grenadelist);
+                ClearVector(threatlist); game_map.SetThreatList(threatlist);
                 p_player.SetBoolComplete(false);
                 p_player.Clear();
             }
         }
     }
     //xoa het tat ca
-    ClearVector(bulletlist);
-    p_player.Set_Bulletlist(bulletlist);
-    ClearVector(threatlist);
-    game_map.SetThreatList(threatlist);
+    ClearVector(bulletlist); p_player.Set_Bulletlist(bulletlist);
+    ClearVector(grenadelist); p_player.Set_Grenadelist(grenadelist);
+    ClearVector(threatlist); game_map.SetThreatList(threatlist);
     close();
 }

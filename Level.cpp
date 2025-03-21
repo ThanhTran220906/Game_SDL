@@ -25,7 +25,11 @@ Level::~Level()
 
 }
 
-void Level::handleEvents(SDL_Event &event,MainObject &player) { // Truyền event từ vòng lặp chính
+void Level::handleEvents(SDL_Event &event,MainObject &player,int x,int y) { // Truyền event từ vòng lặp chính
+    for (int i = 0; i < n; i++) {
+        if(x>400 && x<600 && y>(640 - ((n - 1) * 100)) / 2 + i * 100 && y< (640 - ((n - 1) * 100)) / 2 + i * 100+70) pos=i;
+    }
+
     switch (event.type) {
         case SDL_QUIT:
             is_quit = true;
@@ -51,10 +55,27 @@ void Level::handleEvents(SDL_Event &event,MainObject &player) { // Truyền even
                     gameRunning = true;
                     player.SetHealth(PLAYER_MAX_HEALTH);
                     player.SetPos(SCREEN_WIDTH/2,0);
+                    player.Set_Coin(0);
                     break;
                 default:
                     break;
             }
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if(event.button.button == SDL_BUTTON_LEFT) {
+                if (pos == 0) file_map="map//map01.dat";
+                    if (pos == 1) file_map="map//map02.dat";
+                    if (pos == 2) file_map="map//map03.dat";
+                    if (pos == 3) file_map="map//map04.dat";
+                    if (pos == 4) file_map="map//map05.dat";
+                    if (pos == 5) file_map="map//map06.dat";
+                    loading = true;
+                    LevelChoose = false;
+                    gameRunning = true;
+                    player.SetHealth(PLAYER_MAX_HEALTH);
+                    player.SetPos(SCREEN_WIDTH/2,0);
+                    player.Set_Coin(0);
+                }
             break;
     }
 }

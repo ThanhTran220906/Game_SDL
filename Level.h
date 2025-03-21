@@ -22,7 +22,7 @@ public:
 
 	void update();
 	void render(SDL_Renderer *des);
-	void handleEvents(SDL_Event &event, MainObject &player);
+	void handleEvents(SDL_Event &event, MainObject &player,int x,int y);
     bool GetBoolLoading() { return loading; };
     void SetBoolLoading(bool v) { loading = v; };
     string GetFilemap() { return file_map; };

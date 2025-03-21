@@ -16,8 +16,4 @@ public:
 
 private:
     int start_ticks;
-    int pause_ticks;
-
-    bool is_start;
-    bool is_pause;
 };

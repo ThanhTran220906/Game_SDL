@@ -1,5 +1,5 @@
 #include "MainObject.h"
-#include <bits/stdc++.h>
+
 
 
 MainObject::MainObject()
@@ -15,6 +15,8 @@ MainObject::MainObject()
     input_type_.right_=0;
     input_type_.jump_=0;
     input_type_.run_=0;
+    input_type_.shot_=0;
+    input_type_.grenade_=0;
 
     on_ground_=0;
 
@@ -80,15 +82,73 @@ void MainObject::Show(SDL_Renderer *des)
     else if(status_==RUN_RIGHT) {
         LoadImg("img//p_run_right.png",des);
     }
+    else if(status_==SHOT_RIGHT) {
+        LoadImg("img//shot_right.png",des);
+    }
+    else if(status_==SHOT_LEFT) {
+        LoadImg("img//shot_left.png",des);
+    }
+    else if(status_==GRENADE_LEFT) {
+        LoadImg("img//grenade_left.png",des);
+    }
+    else if(status_==GRENADE_RIGHT) {
+        LoadImg("img//grenade_right.png",des);
+    }
+
     if(delay) {
         frame_++;
         delay=!delay;
     }
-    else delay=!delay;
+    else {
+        delay=!delay;
+    }
 
     frame_=frame_%8;
     if(status_==WALK_LEFT || status_==WALK_RIGHT){
         frame_=frame_%7;
+    }
+    if (input_type_.shot_==1){
+        if(frame_==1 && delay) {
+            input_type_.shot_=0;
+            BulletObject *bullet_tmp= new BulletObject();
+            bullet_tmp->LoadImg("img//bullet.png", des);
+            if(status_==SHOT_RIGHT){
+                bullet_tmp->CreateBullet(x_pos_ + 30, y_pos_ + 34, map_x_, map_y_);
+                bullet_tmp->SetVal(30, 0);
+                status_=IDLE_RIGHT;
+                LoadImg("img//idle_right.png",des);
+            }
+            if(status_==SHOT_LEFT){
+                bullet_tmp->CreateBullet(x_pos_ + 10, y_pos_ + 34, map_x_, map_y_);
+                bullet_tmp->SetVal(-30, 0);
+                status_=IDLE_LEFT;
+                LoadImg("img//idle_left.png",des);
+            }
+            bulletlist.push_back(bullet_tmp);
+
+        }
+    }
+    if (input_type_.grenade_==1){
+        if(frame_>=7 && delay) {
+            frame_=0;
+            input_type_.grenade_=0;
+            GrenadeObject *grenade_tmp= new GrenadeObject();
+            grenade_tmp->LoadImg("img//grenade.png", des);
+            if(status_==GRENADE_RIGHT){
+                grenade_tmp->CreateGrenade(x_pos_ + 30, y_pos_ , map_x_, map_y_);
+                grenade_tmp->SetVal(30, -20);
+                status_=IDLE_RIGHT;
+                LoadImg("img//idle_right.png",des);
+            }
+            if(status_==GRENADE_LEFT){
+                grenade_tmp->CreateGrenade(x_pos_ + 10, y_pos_ , map_x_, map_y_);
+                grenade_tmp->SetVal(-30, -20);
+                status_=IDLE_LEFT;
+                LoadImg("img//idle_left.png",des);
+            }
+            grenadelist.push_back(grenade_tmp);
+
+        }
     }
 
     rect_.x=x_pos_-map_x_;
@@ -106,74 +166,85 @@ void MainObject::Show(SDL_Renderer *des)
 
 }
 
-void MainObject::HandleInputAction(SDL_Event events, SDL_Renderer *screen)
+void MainObject::HandleInputAction(SDL_Event events)
 {
-    bool keyDown = (events.type == SDL_KEYDOWN);
-    bool keyUp = (events.type == SDL_KEYUP);
-
-    if (keyDown || keyUp)
-    {
-        bool pressed = keyDown ? 1 : 0;
-
-        switch (events.key.keysym.sym)
-        {
-        case SDLK_a:  // Sang trái
-            input_type_.left_ = pressed;
-            input_type_.right_ = 0;  // Đảm bảo không đi hai hướng cùng lúc
-            if (pressed) {
-                status_ = (input_type_.run_) ? RUN_LEFT : WALK_LEFT;
-            } else {
-                status_ = input_type_.run_ ? RUN_LEFT : IDLE_LEFT;
-            }
-            break;
-
-        case SDLK_d:  // Sang phải
-            input_type_.right_ = pressed;
-            input_type_.left_ = 0;
-            if (pressed) {
-                status_ = (input_type_.run_) ? RUN_RIGHT : WALK_RIGHT;
-            } else {
-                status_ = input_type_.run_ ? RUN_RIGHT : IDLE_RIGHT;
-            }
-            break;
-
-        case SDLK_LSHIFT:  // Nhấn Shift để chạy
-            input_type_.run_ = pressed;
-            if (pressed) {
-                if (input_type_.left_) status_ = RUN_LEFT;
-                if (input_type_.right_) status_ = RUN_RIGHT;
-            } else {
-                if (input_type_.left_) status_ = WALK_LEFT;
-                else if (input_type_.right_) status_ = WALK_RIGHT;
-                else status_ = IDLE_RIGHT;
-            }
-            break;
-
-        case SDLK_w:  // Nhảy
-            input_type_.jump_ = pressed;
-            break;
-
-        case SDLK_SPACE:  // Bắn đạn
-            if (keyDown)
-            {
-                BulletObject *bullet_tmp= new BulletObject();
-                bullet_tmp->LoadImg("img//bullet.png", screen);
-                if (status_ == WALK_RIGHT || status_ == RUN_RIGHT) {
-                    bullet_tmp->CreateBullet(x_pos_ + 30, y_pos_ + 15, map_x_, map_y_);
-                    bullet_tmp->SetVal(30, 0);
-                }
-                if (status_ == WALK_LEFT || status_ == RUN_LEFT) {
-                    bullet_tmp->CreateBullet(x_pos_ + 10, y_pos_ + 15, map_x_, map_y_);
-                    bullet_tmp->SetVal(-30, 0);
-                }
-                bulletlist.push_back(bullet_tmp);
-            }
-            break;
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    if(input_type_.shot_==1||input_type_.grenade_==1){ return;}
+    if (events.type == SDL_KEYDOWN){
+        if(events.key.keysym.sym == SDLK_w){
+            input_type_.jump_=1;
         }
     }
+    if((events.type ==SDL_KEYDOWN && events.key.keysym.sym==SDLK_a)||(state[SDL_SCANCODE_A])){
+        input_type_.left_ =1;
+        input_type_.right_ =0;
+        status_=WALK_LEFT;
+    }
+    if((events.type ==SDL_KEYDOWN && events.key.keysym.sym==SDLK_d)||(state[SDL_SCANCODE_D])){
+        input_type_.left_=0;
+        input_type_.right_=1;
+        status_=WALK_RIGHT;
+    }
+    if (events.type == SDL_KEYUP) {
+        if(events.key.keysym.sym == SDLK_a){
+            input_type_.left_=0;
+            input_type_.right_=0;
+            status_=IDLE_LEFT;
+        }
+        if(events.key.keysym.sym == SDLK_d) {
+            input_type_.left_=0;
+            input_type_.right_=0;
+            status_=IDLE_RIGHT;
+        }
+    }
+    if((input_type_.left_ ||input_type_.right_)){
+        if ( (events.type ==SDL_KEYDOWN && events.key.keysym.sym==SDLK_LSHIFT) || (state[SDL_SCANCODE_LSHIFT]) ){
+            input_type_.run_=1;
+            if(input_type_.left_==1) status_= RUN_LEFT;
+            if(input_type_.right_==1) status_= RUN_RIGHT;
+        }
+        if(events.type == SDL_KEYUP){
+            if(events.key.keysym.sym == SDLK_LSHIFT){
+                input_type_.run_=0;
+                if(input_type_.left_==1) status_= WALK_LEFT;
+                if(input_type_.right_==1) status_= WALK_RIGHT;
+
+            }
+        }
+    }
+    else input_type_.run_=0;
+
+
+    if(events.type == SDL_KEYDOWN ){
+        if(on_ground_==2 && events.key.keysym.sym == SDLK_SPACE){
+            Clear();
+            input_type_.shot_=1;
+            frame_=0;
+            int ret = Mix_PlayChannel(-1, g_sound_bullet , 0);
+            if (status_ == WALK_RIGHT || status_ == RUN_RIGHT || status_ == IDLE_RIGHT) {
+                status_=SHOT_RIGHT;
+            }
+            if (status_ == WALK_LEFT || status_ == RUN_LEFT || status_ ==IDLE_LEFT) {
+                status_=SHOT_LEFT;
+            }
+        }
+    }
+    if(events.type == SDL_KEYDOWN ){
+        if(on_ground_==2 && events.key.keysym.sym == SDLK_k){
+            Clear();
+            input_type_.grenade_=1;
+            frame_=0;
+            if (status_ == WALK_RIGHT || status_ == RUN_RIGHT || status_ == IDLE_RIGHT) {
+                status_=GRENADE_RIGHT;
+            }
+            if (status_ == WALK_LEFT || status_ == RUN_LEFT || status_ ==IDLE_LEFT) {
+                status_=GRENADE_LEFT;
+            }
+        }
+    }
+
+
 }
-
-
 void MainObject::DoPlayer(Map &map_data)
 {
     x_val_=0;
@@ -181,18 +252,18 @@ void MainObject::DoPlayer(Map &map_data)
 
     if(y_val_>=MAX_FALL_SPEED) y_val_=MAX_FALL_SPEED;
 
-    if(input_type_.left_==1) x_val_=(input_type_.run_==1) ? -PLAYER_SPEED*1.8:-PLAYER_SPEED ;
+    if(input_type_.left_==1) x_val_=(input_type_.run_==1) ? -PLAYER_SPEED*1.5:-PLAYER_SPEED ;
 
-    if(input_type_.right_==1) x_val_=(input_type_.run_==1) ? +PLAYER_SPEED*1.8:+PLAYER_SPEED ;
+    if(input_type_.right_==1) x_val_=(input_type_.run_==1) ? +PLAYER_SPEED*1.5:+PLAYER_SPEED ;
 
     if(input_type_.jump_==1) {
         if(on_ground_!=0){
+            int ret = Mix_PlayChannel(-1, g_sound_jump , 0);
             y_val_=-JUMP_VAL;
             on_ground_--;
         }
         input_type_.jump_=0;
     }
-
 
     CheckToMap(map_data);
     CenterUntinyOnMap(map_data);
@@ -255,7 +326,6 @@ void MainObject::CheckToMap(Map &map_data)
     y1=(y_pos_+y_val_)/TILE_SIZE;
     y2=(y_pos_+y_val_+height_frame_-1)/TILE_SIZE;
 
-    if(on_ground_==0||on_ground_==1) frame_=0;
     if(x1>=0 && x2<MAX_MAP_X && y1>=0 && y2<MAX_MAP_Y){
 
         if(y_val_>0){// down
@@ -273,7 +343,6 @@ void MainObject::CheckToMap(Map &map_data)
             }
         }
     }
-
     x_pos_+=x_val_;
     y_pos_+=y_val_;
 
@@ -322,6 +391,8 @@ void MainObject::Clear()
     input_type_.right_=0;
     input_type_.jump_=0;
     input_type_.run_=0;
+    input_type_.shot_=0;
+    input_type_.grenade_=0;
 }
 
 

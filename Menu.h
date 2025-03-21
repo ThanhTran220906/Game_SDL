@@ -20,7 +20,7 @@ struct titleScreen {
 
 	void update();
 	void render(SDL_Renderer *des);
-	void handleEvents(SDL_Event &event);
+	void handleEvents(SDL_Event &event,int x,int y);
 
 
 };
@@ -37,7 +37,7 @@ struct pauseMenu {
 
 	void update();
 	void render(SDL_Renderer *des);
-	void handleEvents(SDL_Event &event);
+	void handleEvents(SDL_Event &event,int x,int y);
 	bool GetBoolLoading() { return loading; };
     void SetBoolLoading(bool v) { loading = v; };
 
@@ -55,7 +55,7 @@ struct GameOverMenu {
 
 	void update();
 	void render(SDL_Renderer *des);
-	void handleEvents(SDL_Event &event, MainObject &player);
+	void handleEvents(SDL_Event &event, MainObject &player,int x,int y);
     bool GetBoolLoading() { return loading; };
     void SetBoolLoading(bool v) { loading = v; };
 

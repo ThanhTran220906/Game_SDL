@@ -4,14 +4,13 @@
 #include "CommonFunc.h"
 #include "BaseObject.h"
 #include "BulletObject.h"
+#include "Grenade.h"
 
 #define GRAVITY 1.3
 #define MAX_FALL_SPEED 15
-#define PLAYER_SPEED 9
+#define PLAYER_SPEED 11
 #define JUMP_VAL 17
 #define PLAYER_MAX_HEALTH 10
-
-#define COME_BACK_TIME 1000
 
 class MainObject : public BaseObject
 {
@@ -27,11 +26,15 @@ public:
         WALK_LEFT=3,
         RUN_LEFT=4,
         RUN_RIGHT=5,
+        SHOT_LEFT=6,
+        SHOT_RIGHT=7,
+        GRENADE_LEFT=8,
+        GRENADE_RIGHT=9,
     };
 
     bool LoadImg(string path,SDL_Renderer *screen);
     void Show(SDL_Renderer *des);
-    void HandleInputAction(SDL_Event events,SDL_Renderer *screen);
+    void HandleInputAction(SDL_Event events);
     void set_clips();
 
     void DoPlayer(Map &map_data);
@@ -47,7 +50,10 @@ public:
     float Get_y_pos(){ return y_pos_;};
 
     void Set_Bulletlist(const vector<BulletObject*>& v) { bulletlist = v;};
+    void Set_Grenadelist(const vector<GrenadeObject*>& v) { grenadelist = v;};
+
     vector<BulletObject*> Get_Bulletlist(){return bulletlist;};
+    vector<GrenadeObject*> Get_Grenadelist(){return grenadelist;};
 
     void SetHealth(int health) { current_health_=health;};
     int GetHealth(){return current_health_;};
@@ -57,7 +63,8 @@ public:
     void CompleteLevel(int &val);
     void SetBoolComplete(bool v) { complete = v; };
     bool GetBoolComplete() { return complete; };
-
+    void Set_Coin(int n) {count_coins_=n;};
+    int Get_Coin() {return count_coins_;};
     void Clear();
 
 private:
@@ -83,10 +90,12 @@ private:
     int count_coins_;
 
     vector<BulletObject*> bulletlist;
+    vector<GrenadeObject*> grenadelist;
+
 
     int current_health_;
+    int current_stamina_;
 
     bool complete;
-
     bool delay;
 };

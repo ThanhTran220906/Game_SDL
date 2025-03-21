@@ -28,8 +28,6 @@ public:
     Map GetMap() const {return game_map_;};
     void SetMap(Map &map_data) { game_map_=map_data; }
 
-    void SpawnThreat();
-
     vector<ThreatObject*> GetThreatList(){ return threatlist;};
     void SetThreatList(vector<ThreatObject*> &v) { threatlist = v;};
 
