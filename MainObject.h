@@ -94,7 +94,6 @@ private:
 
 
     int current_health_;
-    int current_stamina_;
 
     bool complete;
     bool delay;

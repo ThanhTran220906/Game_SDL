@@ -1,7 +1,11 @@
 
 #pragma once
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -10,9 +14,9 @@
 
 using namespace std;
 //
-static SDL_Window *g_window =NULL;
-static SDL_Renderer *g_screen =NULL;
-static SDL_Event g_event;
+extern SDL_Window* g_window;
+extern SDL_Renderer* g_screen;
+extern SDL_Event g_event;
 //
 extern Mix_Chunk*  g_sound_bullet;
 extern Mix_Chunk*  g_sound_explode;

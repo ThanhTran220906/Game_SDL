@@ -75,8 +75,11 @@
 1741831229 c:\users\legion\documents\codeblock\game_sdldemo\baseobject.h
 	"CommonFunc.h"
 
-1742667506 c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.h
-	<bits/stdc++.h>
+1742679032 c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.h
+	<iostream>
+	<vector>
+	<string>
+	<fstream>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_mixer.h>
@@ -89,8 +92,7 @@
 	"CommonFunc.h"
 	"BaseObject.h"
 
-1742667417 source:c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.cpp
-	<bits/stdc++.h>
+1742679009 source:c:\users\legion\documents\codeblock\game_sdldemo\commonfunc.cpp
 	"CommonFunc.h"
 
 1742658011 source:c:\users\legion\documents\codeblock\game_sdldemo\game_map.cpp
@@ -108,7 +110,7 @@
 	"BulletObject.h"
 	"MainObject.h"
 
-1742667506 c:\users\legion\documents\codeblock\game_sdldemo\mainobject.h
+1742680409 c:\users\legion\documents\codeblock\game_sdldemo\mainobject.h
 	"CommonFunc.h"
 	"BaseObject.h"
 	"BulletObject.h"
@@ -120,22 +122,17 @@
 
 1742435523 c:\users\legion\documents\codeblock\game_sdldemo\imptimer.h
 
-1742669985 source:c:\users\legion\documents\codeblock\game_sdldemo\main.cpp
-	"BaseObject.h"
-	"game_map.h"
-	"MainObject.h"
-	"ImpTimer.h"
-	"Menu.h"
-	"Level.h"
+1742679858 source:c:\users\legion\documents\codeblock\game_sdldemo\main.cpp
+	"Game.h"
 
-1742666026 source:c:\users\legion\documents\codeblock\game_sdldemo\mainobject.cpp
+1742680409 source:c:\users\legion\documents\codeblock\game_sdldemo\mainobject.cpp
 	"MainObject.h"
 
 1742667688 source:c:\users\legion\documents\codeblock\game_sdldemo\threatobject.cpp
 	"ThreatObject.h"
 	<bits/stdc++.h>
 
-1742670435 source:c:\users\legion\documents\codeblock\game_sdldemo\textobject.cpp
+1742680660 source:c:\users\legion\documents\codeblock\game_sdldemo\textobject.cpp
 	"TextObject.h"
 	<SDL_ttf.h>
 
@@ -164,4 +161,15 @@
 
 1742458893 source:c:\users\legion\documents\codeblock\game_sdldemo\grenade.cpp
 	"Grenade.h"
+
+1742679424 c:\users\legion\documents\codeblock\game_sdldemo\game.h
+	"BaseObject.h"
+	"game_map.h"
+	"MainObject.h"
+	"ImpTimer.h"
+	"Menu.h"
+	"Level.h"
+
+1742679579 source:c:\users\legion\documents\codeblock\game_sdldemo\game.cpp
+	"Game.h"
 

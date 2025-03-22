@@ -55,7 +55,10 @@ void TextObject::Free()
         SDL_DestroyTexture(texture_);
         texture_ = NULL;
     }
-    TTF_CloseFont(gFont);
+    if (gFont != NULL) {
+        TTF_CloseFont(gFont);
+        gFont = NULL;
+    }
 }
 
 void TextObject::setColor(Uint8 red, Uint8 green, Uint8 blue)

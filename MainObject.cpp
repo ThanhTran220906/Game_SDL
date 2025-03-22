@@ -7,6 +7,8 @@ MainObject::MainObject()
     frame_=0;
     x_pos_=SCREEN_WIDTH/2;
     y_pos_=0;
+    x_val_=0;
+    y_val_=0;
     width_frame_=0;
     height_frame_ =0;
     status_=0;
@@ -25,7 +27,7 @@ MainObject::MainObject()
     count_coins_=0;
 
     current_health_=PLAYER_MAX_HEALTH;
-
+    complete=false;
     delay=false;
 }
 

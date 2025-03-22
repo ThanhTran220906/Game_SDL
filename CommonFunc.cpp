@@ -1,6 +1,10 @@
 
-#include <bits/stdc++.h>
 #include "CommonFunc.h"
+
+SDL_Window* g_window = NULL;
+SDL_Renderer* g_screen = NULL;
+SDL_Event g_event;
+
 
 bool gameRunning =false;
 bool Title =true;
