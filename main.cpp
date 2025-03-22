@@ -274,7 +274,8 @@ int main(int argc, char* argv[]) {
 
             p_player.Set_Grenadelist(grenadelist);
             p_player.Set_Bulletlist(bulletlist);//cap nhat lai bulletlist cua player
-
+            //coin
+            Coin.SetText("Coin: "+to_string(p_player.Get_Coin()))  ;Coin.loadFromRenderedText(g_screen); Coin.RenderText(g_screen);
             SDL_RenderPresent(g_screen); //in ra man hinh
             //xu li fps
             int real_time_loop = fps.get_ticks();
