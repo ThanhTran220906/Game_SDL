@@ -231,7 +231,7 @@ int main(int argc, char* argv[]) {
     vector<BulletObject*> bulletlist ;
     vector<GrenadeObject*> grenadelist ;
     vector<Explode*> explodelist ;
-    TextObject Coin; Coin.SetXY(20,20); Coin.SetSize(20);
+    TextObject Coin; Coin.TextInit(); Coin.SetXY(20,20); Coin.SetSize(20);
 
     //game loop
     while (!is_quit) {

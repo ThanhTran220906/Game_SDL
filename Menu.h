@@ -10,13 +10,15 @@
 
 
 
-struct titleScreen {
-	int pos = 0;
-	int last_pos = 0;
-	int n = 3;
+class titleScreen {
+private:
+
+	int pos ;
+	int last_pos;
+	int n ;
 	TextObject textBoxes[3];
 	BaseObject background;
-
+public:
 	titleScreen();
 	~titleScreen();
 
@@ -27,14 +29,15 @@ struct titleScreen {
 
 };
 
-struct pauseMenu {
-	int pos = 0;
-	int last_pos = 0;
-	int n = 4;
-	bool loading = false;
+class pauseMenu {
+private:
+	int pos ;
+	int last_pos ;
+	int n ;
+	bool loading ;
 
 	TextObject textBoxes[4];
-
+public:
 	pauseMenu();
 	~pauseMenu();
 
@@ -47,14 +50,16 @@ struct pauseMenu {
 };
 
 
-struct GameOverMenu {
-	int pos = 0;
-	int last_pos = 0;
-	int n = 3;
-	TextObject textBoxes[3];
-    bool loading = false;
-    BaseObject background;
+class GameOverMenu {
+private:
 
+	int pos ;
+	int last_pos ;
+	int n ;
+	TextObject textBoxes[3];
+    bool loading;
+    BaseObject background;
+public:
 	GameOverMenu();
 	~GameOverMenu();
 

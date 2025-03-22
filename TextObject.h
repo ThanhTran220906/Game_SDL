@@ -27,12 +27,13 @@ public:
     void setColor(int type);
 
     void RenderText(SDL_Renderer* screen);
+    void TextInit() { gFont = TTF_OpenFont("font/OpenSans-Regular.ttf", size_);};
 
-    void SetXY(int x,int y){ x_=x;y_=y; gFont = TTF_OpenFont("font/OpenSans-Regular.ttf", size_);};
+    void SetXY(int x,int y){ x_=x;y_=y;};
 
-    int getWidth() const {return width_;}
-    int getHeight() const {return height_;}
-    void SetText(const string& text) {str_val_ = text;}
+    int getWidth() const {return width_;};
+    int getHeight() const {return height_;};
+    void SetText(const string& text) {str_val_ = text;};
     string GetText() const {return str_val_;}
 
     void SetSize(int x) {size_=x; gFont = TTF_OpenFont("font/OpenSans-Regular.ttf", size_);};

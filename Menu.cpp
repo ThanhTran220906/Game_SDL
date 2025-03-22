@@ -5,10 +5,12 @@
 
 titleScreen::titleScreen() {
     pos = 0; // Khởi tạo vị trí chọn
-
+    last_pos=0;
+    n = 3;
     for (int i = 0; i < n; i++) {
         int x = 800 / 2;
         int y = (640 - ((n - 1) * 100)) / 2 + i * 100;
+        textBoxes[i].TextInit();
         textBoxes[i].SetXY(x, y);
     }
 
@@ -94,10 +96,13 @@ void titleScreen::render(SDL_Renderer* des) {
 
 pauseMenu::pauseMenu() {
     pos = 0; // Khởi tạo vị trí chọn
-
+    last_pos=0;
+    loading=false;
+    n = 4;
     for (int i = 0; i < n; i++) {
         int x = 800 / 2;
         int y = (640 - ((n - 1) * 100)) / 2 + i * 100;
+        textBoxes[i].TextInit();
         textBoxes[i].SetXY(x, y);
     }
 
@@ -185,10 +190,13 @@ void pauseMenu::render(SDL_Renderer* des) {
 
 GameOverMenu::GameOverMenu() {
     pos = 0; // Khởi tạo vị trí chọn
-
+    last_pos=0;
+    loading=false;
+    n = 3;
     for (int i = 0; i < n; i++) {
         int x = 800 / 2;
         int y = (640 - ((n - 1) * 100)) / 2 + i * 100;
+        textBoxes[i].TextInit();
         textBoxes[i].SetXY(x, y);
     }
 

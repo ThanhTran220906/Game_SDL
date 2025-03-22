@@ -4,9 +4,10 @@
 TextObject::TextObject()
 {
     text_color_ = {255, 255, 255}; // Màu mặc định là trắng
-    x_ = 0;
-    y_ = 0;
+    x_ = 0; y_ = 0;
+    width_=0; height_=0;
     size_ = 24;
+    str_val_="";
     texture_ = NULL; // Khởi tạo con trỏ tránh lỗi
     gFont = NULL;
 }
@@ -18,7 +19,10 @@ TextObject::~TextObject()
 
 bool TextObject::loadFromRenderedText(SDL_Renderer* screen)
 {
-    Free();
+    if (texture_ != NULL) {
+        SDL_DestroyTexture(texture_);
+        texture_ = NULL;
+    }
 
     if (gFont == NULL) { // Kiểm tra xem font có tồn tại không
         printf("Loi: gFont khong ton tai!\n");
@@ -51,6 +55,7 @@ void TextObject::Free()
         SDL_DestroyTexture(texture_);
         texture_ = NULL;
     }
+    TTF_CloseFont(gFont);
 }
 
 void TextObject::setColor(Uint8 red, Uint8 green, Uint8 blue)

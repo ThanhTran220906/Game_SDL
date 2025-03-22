@@ -10,6 +10,7 @@ Level::Level() {
     for (int i = 0; i < n; i++) {
         int x = 800 / 2;
         int y = (640 - ((n - 1) * 100)) / 2 + i * 100;
+        textBoxes[i].TextInit();
         textBoxes[i].SetXY(x, y);
     }
 
