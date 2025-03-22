@@ -82,7 +82,7 @@ void Level::handleEvents(SDL_Event &event,MainObject &player,int x,int y) { // T
 }
 
 void Level::update() {
-        if(pos!=last_pos){
+    if(pos!=last_pos){
         if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_menu , 0);
         last_pos=pos;
     }
@@ -110,10 +110,28 @@ void Level::update() {
 void Level::render(SDL_Renderer* des) {
     SDL_SetRenderDrawColor(des, 20, 20, 20, 255);
     SDL_RenderClear(des);
-
+    background.LoadImg("img//menu.png",des);
+    background.Render(des,NULL);
     for (int i = 0; i < n; i++) {
         textBoxes[i].loadFromRenderedText(des);
         textBoxes[i].RenderText(des);
+    }
+    SDL_Rect rect;
+    for (int i = 0; i < n; i++) {
+        int size = (i == pos) ? 42 : 24;
+        int textWidth = size * 5;
+        int textHeight = size * 1.5;
+        int x = 450 - textWidth / 2;
+        int y = (640 - ((n - 1) * 100)) / 2 + i * 100 - (i == pos ? 20 : 0);
+
+        rect.x = x - ((i==pos) ? -10:0);
+        rect.y = y - 10;
+        rect.w = textWidth + 20;
+        rect.h = textHeight + 20;
+
+        // Chọn màu khung (VD: trắng)
+        SDL_SetRenderDrawColor(des, 255, 255, 255, 255);
+        SDL_RenderDrawRect(des, &rect);
     }
     SDL_RenderPresent(des);
 }

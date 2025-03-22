@@ -15,6 +15,7 @@ struct titleScreen {
 	int last_pos = 0;
 	int n = 3;
 	TextObject textBoxes[3];
+	BaseObject background;
 
 	titleScreen();
 	~titleScreen();

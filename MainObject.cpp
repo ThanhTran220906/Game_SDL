@@ -219,7 +219,7 @@ void MainObject::HandleInputAction(SDL_Event events)
         if(on_ground_==2 && events.button.button == SDL_BUTTON_LEFT){
             Clear();
             input_type_.shot_=1;
-            frame_=0;
+            frame_=-1; delay=true;
             if(SoundEnable) int ret = Mix_PlayChannel(-1, g_sound_bullet , 0);
             if (status_ == WALK_RIGHT || status_ == RUN_RIGHT || status_ == IDLE_RIGHT) {
                 status_=SHOT_RIGHT;
@@ -233,7 +233,7 @@ void MainObject::HandleInputAction(SDL_Event events)
         if(on_ground_==2 && events.button.button == SDL_BUTTON_RIGHT){
             Clear();
             input_type_.grenade_=1;
-            frame_=0;
+            frame_=-1; delay=true;
             if (status_ == WALK_RIGHT || status_ == RUN_RIGHT || status_ == IDLE_RIGHT) {
                 status_=GRENADE_RIGHT;
             }

@@ -24,6 +24,7 @@ ThreatObject::ThreatObject()
     move_to_player=false;
     is_attack=false;
     run_attack=false;
+    dead=false;
     delay=0;
 }
 
@@ -84,6 +85,12 @@ void ThreatObject::Show(SDL_Renderer *des)
     else if(status_==RUN_ATTACK_LEFT){
         LoadImg("img//run_attack_left.png",des);
     }
+    else if(status_==DEAD_LEFT){
+        LoadImg("img//threat_dead_left.png",des);
+    }
+    else if(status_==DEAD_RIGHT){
+        LoadImg("img//threat_dead_right.png",des);
+    }
 
     if(delay) {
         frame_++;
@@ -114,29 +121,40 @@ void ThreatObject::Do_Threat(Map &map_data, MainObject &player)
 {
     int dx = player.Get_x_pos() - x_pos_;
     int dy = player.Get_y_pos() - y_pos_;
-    if(!run_attack && !is_attack){
-        if(dx*dx+dy*dy<25000 && dx*dx+dy*dy>23000 && abs(dy)<30){
-            run_attack=true; frame_=0;
-            x_val_ = THREAT_VAL * ((dx > 0) ? 1 : -1) * 3; // Tăng tốc nhưng không nhảy
-            status_ = (x_val_ < 0) ? RUN_ATTACK_LEFT : RUN_ATTACK_RIGHT;
+    if(!dead){
+        if(current_health<=0) {
+            dead=true;
+            x_val_=0; status_=(dx>0) ? DEAD_RIGHT :DEAD_LEFT;
+            frame_=-1; delay=true;
+            run_attack=false; is_attack=false; move_to_player=false;
         }
-        else if(dx*dx+dy*dy<2500) {
-            is_attack=true; frame_=0;
-            status_ = (dx<0) ? ATTACK_LEFT : ATTACK_RIGHT;
+        else if(!run_attack && !is_attack){
+            if(dx*dx+dy*dy<25000 && dx*dx+dy*dy>23000 && abs(dy)<30){
+                run_attack=true; frame_=-1; delay=true;
+                x_val_ = THREAT_VAL * ((dx > 0) ? 1 : -1) * 3; // Tăng tốc nhưng không nhảy
+                status_ = (x_val_ < 0) ? RUN_ATTACK_LEFT : RUN_ATTACK_RIGHT;
+            }
+            else if(dx*dx+dy*dy<2500) {
+                is_attack=true; frame_=-1; delay=true;
+                status_ = (dx<0) ? ATTACK_LEFT : ATTACK_RIGHT;
+            }
+            else if(dx*dx+dy*dy<90000) move_to_player=true;
+            else move_to_player=false;
         }
-        else if(dx*dx+dy*dy<90000) move_to_player=true;
-        else move_to_player=false;
+        if(run_attack){
+            Run_attack(player, map_data);
+        }
+        else if(is_attack){
+            Attack_player(player);
+        }
+        else if(move_to_player){
+            MovetoPlayer(player,map_data);
+        }
+        else if (!dead) AutoMoveThreat(map_data);
     }
-    if(run_attack){
-        Run_attack(player, map_data);
+    if(dead) {
+        Dead();
     }
-    else if(is_attack){
-        Attack_player(player);
-    }
-    else if(move_to_player){
-        MovetoPlayer(player,map_data);
-    }
-    else AutoMoveThreat(map_data);
 }
 
 void ThreatObject::AutoMoveThreat(Map &map_data)
@@ -270,33 +288,36 @@ void ThreatObject::Attack_player(MainObject &player)
     }
 }
 
-
-
+void ThreatObject::Dead()
+{
+    if(frame_==3 && delay) current_health--;
+}
 
 void ThreatObject::Bullet_to_threat(vector <BulletObject*> &bulletlist, vector <Explode*> explodelist)
-{
-    for(int i=0;i<bulletlist.size();i++){
-        if(bulletlist[i]->Get_is_move()){
-        SDL_Rect r=bulletlist[i]->GetRect();
-        if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
-           || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_))
-            {
-                bulletlist[i]->Set_is_move(false);
-                current_health--;
+{   if(!dead){
+        for(int i=0;i<bulletlist.size();i++){
+            if(bulletlist[i]->Get_is_move()){
+            SDL_Rect r=bulletlist[i]->GetRect();
+            if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+               || (r.x+r.w>rect_.x && r.x+r.w<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_))
+                {
+                    bulletlist[i]->Set_is_move(false);
+                    current_health--;
+                }
             }
         }
-    }
-    for(int i=0;i<explodelist.size();i++){
-        if(explodelist[i]->Get_frame()==4){
-            SDL_Rect r=explodelist[i]->GetRect();
-        if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x+r.w/6>rect_.x && r.x+r.w/6<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
-           || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
-           || (r.x+r.w/6>rect_.x && r.x+r.w/6<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_))
-            {
-                current_health--;
+        for(int i=0;i<explodelist.size();i++){
+            if(explodelist[i]->Get_frame()==4){
+                SDL_Rect r=explodelist[i]->GetRect();
+            if((r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x+r.w/6>rect_.x && r.x+r.w/6<rect_.x+width_frame_ &&  r.y>rect_.y  &&  r.y<rect_.y+height_frame_)
+               || (r.x>rect_.x  &&  r.x<rect_.x+width_frame_ &&  r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_)
+               || (r.x+r.w/6>rect_.x && r.x+r.w/6<rect_.x+width_frame_&& r.y+r.h >rect_.y  &&  r.y+r.h <rect_.y+height_frame_))
+                {
+                    current_health--;
+                }
             }
         }
     }

@@ -209,7 +209,7 @@ int main(int argc, char* argv[]) {
                 threatlist[i]->SetMapXY(map_data.start_x_,map_data.start_y_);
                 threatlist[i]->Do_Threat(map_data,p_player);
                 threatlist[i]->Bullet_to_threat(bulletlist, explodelist);
-                if(threatlist[i]->Get_health()<=0){
+                if(threatlist[i]->Get_health()<0){
                     delete threatlist[i]; threatlist[i]=nullptr;
                     threatlist.erase(threatlist.begin()+i); continue;
                 }

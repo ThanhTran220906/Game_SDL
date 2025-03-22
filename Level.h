@@ -12,11 +12,12 @@ class Level {
 private:
 	int pos ;
 	int last_pos ;
-	int n = 6;
+	int n = TOTAL_LEVELS;
 	TextObject textBoxes[6];
 	string file_map;
 	bool loading;
 	int CompleteLevel[TOTAL_LEVELS];
+	BaseObject background;
 public:
 	Level();
 	~Level();

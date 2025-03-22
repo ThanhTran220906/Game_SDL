@@ -25,6 +25,8 @@ public:
         RUN_RIGHT=5,
         RUN_ATTACK_RIGHT=6,
         RUN_ATTACK_LEFT=7,
+        DEAD_LEFT=8,
+        DEAD_RIGHT=9,
     };
 
     bool LoadImg(string path,SDL_Renderer *screen);
@@ -39,6 +41,7 @@ public:
     void MovetoPlayer(MainObject player,Map map_data);
     void Attack_player(MainObject &player);
     void Run_attack(MainObject &player, Map map_data);
+    void Dead();
     void Do_Threat(Map &map_data, MainObject &player);
 
     void Bullet_to_threat(vector <BulletObject*> &bulletlist,vector <Explode*> explodelist);
@@ -71,6 +74,7 @@ private:
     bool move_to_player;
     bool is_attack;
     bool run_attack;
+    bool dead;
     bool delay;
 };
 
