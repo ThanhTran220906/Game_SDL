@@ -28,15 +28,14 @@ public:
 
     void RenderText(SDL_Renderer* screen);
 
-    void SetXY(int x,int y){ x_=x;y_=y; };
+    void SetXY(int x,int y){ x_=x;y_=y; gFont = TTF_OpenFont("font/OpenSans-Regular.ttf", size_);};
 
     int getWidth() const {return width_;}
     int getHeight() const {return height_;}
     void SetText(const string& text) {str_val_ = text;}
     string GetText() const {return str_val_;}
 
-    void SetSize(int x) {size_=x;};
-    void SetFont(string s) { font_=s; };
+    void SetSize(int x) {size_=x; gFont = TTF_OpenFont("font/OpenSans-Regular.ttf", size_);};
 
 private:
     TTF_Font* gFont;
@@ -48,7 +47,6 @@ private:
     int x_;
     int y_;
     int size_;
-    string font_;
 };
 
 

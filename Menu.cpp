@@ -258,6 +258,8 @@ void GameOverMenu::update() {
 void GameOverMenu::render(SDL_Renderer* des) {
     SDL_SetRenderDrawColor(des, 20, 20, 20, 255);
     SDL_RenderClear(des);
+    background.LoadImg("img//gameover.png",des);
+    background.Render(des, NULL);
 
     for (int i = 0; i < n; i++) {
         textBoxes[i].loadFromRenderedText(des);

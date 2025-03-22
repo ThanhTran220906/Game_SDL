@@ -35,7 +35,7 @@ ThreatObject::~ThreatObject()
 
 bool ThreatObject::LoadImg(string path,SDL_Renderer *screen)
 {
-    bool ret=BaseObject::LoadImg(path,screen);//kế thừa từ baseobject
+    bool ret=BaseObject::LoadImg(path,screen);//virtual func
     if(ret==true)
     {
         width_frame_=rect_.w/8;
@@ -134,7 +134,7 @@ void ThreatObject::Do_Threat(Map &map_data, MainObject &player)
                 x_val_ = THREAT_VAL * ((dx > 0) ? 1 : -1) * 3; // Tăng tốc nhưng không nhảy
                 status_ = (x_val_ < 0) ? RUN_ATTACK_LEFT : RUN_ATTACK_RIGHT;
             }
-            else if(dx*dx+dy*dy<2500) {
+            else if(dx*dx+dy*dy<4900) {
                 is_attack=true; frame_=-1; delay=true;
                 status_ = (dx<0) ? ATTACK_LEFT : ATTACK_RIGHT;
             }
@@ -255,7 +255,7 @@ void ThreatObject::Run_attack(MainObject &player, Map map_data)
         }
     }
     x_pos_ += x_val_;
-    if(frame_>=7) {
+    if(frame_>=6 && delay) {
         run_attack=false;
         frame_=0;
         status_ = (status_==RUN_ATTACK_LEFT) ? WALK_LEFT : WALK_RIGHT;
@@ -281,7 +281,7 @@ void ThreatObject::Attack_player(MainObject &player)
             player.SetHealth(health_player);
         }
     }
-    if(frame_>=6&& !delay) {
+    if(frame_>=5 && delay) {
         is_attack=false;
         frame_=0;
         status_ = (status_==ATTACK_LEFT) ? WALK_LEFT : WALK_RIGHT;

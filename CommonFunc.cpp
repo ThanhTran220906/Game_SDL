@@ -17,3 +17,5 @@ Mix_Chunk*  g_sound_jump =NULL;
 Mix_Chunk*  g_sound_coin =NULL;
 Mix_Chunk*  g_sound_hurt =NULL;
 Mix_Chunk*  g_sound_menu =NULL;
+
+

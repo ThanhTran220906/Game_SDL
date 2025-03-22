@@ -7,8 +7,8 @@ TextObject::TextObject()
     x_ = 0;
     y_ = 0;
     size_ = 24;
-    font_ = "font//OpenSans-Regular.ttf";
     texture_ = NULL; // Khởi tạo con trỏ tránh lỗi
+    gFont = NULL;
 }
 
 TextObject::~TextObject()
@@ -18,11 +18,10 @@ TextObject::~TextObject()
 
 bool TextObject::loadFromRenderedText(SDL_Renderer* screen)
 {
-    //Free(); // Giải phóng texture cũ trước khi tạo mới
+    Free();
 
-    TTF_Font* gFont = TTF_OpenFont("font//OpenSans-Regular.ttf", size_);
-    if (gFont == NULL) {
-        printf("Khong the tai font! Loi: %s\n", TTF_GetError());
+    if (gFont == NULL) { // Kiểm tra xem font có tồn tại không
+        printf("Loi: gFont khong ton tai!\n");
         return false;
     }
 
@@ -42,7 +41,6 @@ bool TextObject::loadFromRenderedText(SDL_Renderer* screen)
     }
 
     SDL_FreeSurface(textSurface);
-    TTF_CloseFont(gFont); // Giải phóng font sau khi tạo xong
 
     return texture_ != NULL;
 }

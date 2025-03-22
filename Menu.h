@@ -53,6 +53,7 @@ struct GameOverMenu {
 	int n = 3;
 	TextObject textBoxes[3];
     bool loading = false;
+    BaseObject background;
 
 	GameOverMenu();
 	~GameOverMenu();

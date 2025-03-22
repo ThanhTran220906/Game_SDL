@@ -297,8 +297,8 @@ void MainObject::CheckToMap(Map &map_data)
 
     //check horizontal
     int height_min =min(height_frame_,TILE_SIZE);
-    x1 = (x_pos_ + x_val_) / TILE_SIZE;
-    x2 = (x_pos_ + x_val_ + width_frame_ - 1) / TILE_SIZE;
+    x1 = (x_pos_+ 15 + x_val_) / TILE_SIZE;
+    x2 = (x_pos_- 15 + x_val_ + width_frame_ - 1) / TILE_SIZE;
 
     y1=(y_pos_)/TILE_SIZE;
     y2=(y_pos_+height_min-1)/TILE_SIZE;
@@ -307,21 +307,21 @@ void MainObject::CheckToMap(Map &map_data)
         if(x_val_>0){// right
             if(map_data.tile[y1][x2]!=BLANK_TILE || map_data.tile[y2][x2]!=BLANK_TILE){
                 x_pos_ = x2 * TILE_SIZE;
-                x_pos_-=width_frame_+1;
+                x_pos_-=width_frame_+1-15;
                 x_val_ = 0;
             }
         }
         if(x_val_<0){
             if(map_data.tile[y1][x1]!=BLANK_TILE || map_data.tile[y2][x1]!=BLANK_TILE){
-                x_pos_ = (x1 + 1) * TILE_SIZE;
+                x_pos_ = (x1 + 1) * TILE_SIZE-15;
                 x_val_ = 0;
             }
         }
     }
     //check vertical
     int width_min =min(width_frame_,TILE_SIZE);
-    x1=(x_pos_)/TILE_SIZE;
-    x2=(x_pos_+width_min)/TILE_SIZE;
+    x1=(x_pos_ +15)/TILE_SIZE;
+    x2=(x_pos_-15 +width_min)/TILE_SIZE;
 
     y1=(y_pos_+y_val_)/TILE_SIZE;
     y2=(y_pos_+y_val_+height_frame_-1)/TILE_SIZE;

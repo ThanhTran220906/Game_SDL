@@ -30,10 +30,10 @@ void GameMap::LoadMap(string name)
     for(int i=0;i<MAX_MAP_Y;i++){
         for(int j=0;j<MAX_MAP_X;j++){
             if(game_map_.tile[i][j]==20){
-                ThreatObject *thread_tmp =new ThreatObject;
-                thread_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE-27);
+                ThreatObject *threat_tmp =new ThreatObject;
+                threat_tmp->Set_pos(j*TILE_SIZE,i*TILE_SIZE-27);
                 game_map_.tile[i][j]=0;
-                threatlist.push_back(thread_tmp);
+                threatlist.push_back(threat_tmp);
             }
         }
     }      //
@@ -95,7 +95,15 @@ void GameMap::DrawMap(SDL_Renderer *screen)
     }
 }
 
-
+vector<ThreatObject *> GameMap::Loadgame(string name, SDL_Renderer* des)
+{
+    LoadMap(name);
+    for(int i=0;i<threatlist.size();i++){
+        threatlist[i]->LoadImg("img//threat_right.png", des);
+        threatlist[i]->set_clips();
+    }
+    return threatlist;
+}
 
 
 

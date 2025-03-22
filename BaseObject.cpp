@@ -18,6 +18,7 @@ BaseObject::~BaseObject()//ham huy
 
 bool BaseObject::LoadImg(string path,SDL_Renderer *screen)//load img len renderer
 {
+    Free();
     SDL_Texture *new_texture=NULL;
 
     SDL_Surface *load_surface=IMG_Load(path.c_str());
@@ -52,8 +53,6 @@ void BaseObject::Free()
         rect_.w=0;
         rect_.h=0;
     }
-
-
 }
 
 
